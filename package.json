@@ -1,0 +1,14 @@
+{
+  "name": "ai-ku",
+  "version": "1.0.0",
+  "description": "Gratis AI LLM & Image Generator tanpa API Key",
+  "main": "app.py",
+  "dependencies": {
+    "ai-ku": "https://github.com/yehazkiell/ai-ku"
+  },
+  "scripts": {
+    "start": "python3 app.py"
+  },
+  "author": "yehazkiell",
+  "license": "MIT"
+}

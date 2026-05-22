@@ -12,16 +12,15 @@ def index():
 def chat():
     data = request.json
     message = data.get('message', '')
+    model = data.get('model', 'openai')
     if not message:
         return jsonify({'error': 'No message provided'}), 400
 
     try:
         # Using Pollinations.ai text API
-        # Encode message to be safe in URL
         encoded_message = urllib.parse.quote(message)
-        # Using a system prompt to ensure it responds well
-        system_prompt = urllib.parse.quote("Kamu adalah AI asisten yang pintar dan membantu. Jawablah dalam bahasa Indonesia.")
-        url = f"https://text.pollinations.ai/{encoded_message}?system={system_prompt}&model=openai"
+        system_prompt = urllib.parse.quote("Kamu adalah AI asisten yang pintar dan membantu. Jawablah dalam bahasa Indonesia. Gunakan format Markdown untuk jawaban yang panjang atau teknis.")
+        url = f"https://text.pollinations.ai/{encoded_message}?system={system_prompt}&model={model}"
 
         response = requests.get(url)
         if response.status_code == 200:
@@ -37,13 +36,17 @@ def chat():
 def generate_image():
     data = request.json
     prompt = data.get('prompt', '')
+    model = data.get('model', 'flux') # Default to flux for better quality
     if not prompt:
         return jsonify({'error': 'No prompt provided'}), 400
 
     # Pollinations.ai image API
-    # We return the URL of the generated image
     encoded_prompt = urllib.parse.quote(prompt)
-    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&nologo=true&seed={urllib.parse.quote(str(data.get('seed', '')))}"
+    width = data.get('width', 1024)
+    height = data.get('height', 1024)
+    seed = data.get('seed', '')
+
+    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={width}&height={height}&nologo=true&model={model}&seed={urllib.parse.quote(str(seed))}"
 
     return jsonify({'image_url': image_url})
 

@@ -3,42 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Ku - Chat & Gambar</title>
+    <title>AI-Ku - Super AI Assistant</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Markdown and Sanitization libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 </head>
-<body>
+<body class="light-mode">
     <div class="container">
         <header>
-            <h1><i class="fas fa-robot"></i> AI-Ku</h1>
-            <p>Chat LLM & Generate Gambar Gratis</p>
+            <div class="header-main">
+                <h1><i class="fas fa-robot"></i> AI-Ku</h1>
+                <div class="header-actions">
+                    <button id="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+                </div>
+            </div>
+            <p>Chat LLM & Image Generation Gratis Selamanya</p>
         </header>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="openTab('chat-tab')">Chat</button>
-            <button class="tab-btn" onclick="openTab('image-tab')">Gambar</button>
+            <button class="tab-btn active" onclick="openTab('chat-tab')"><i class="fas fa-comment"></i> Chat</button>
+            <button class="tab-btn" onclick="openTab('image-tab')"><i class="fas fa-image"></i> Gambar</button>
         </div>
 
         <div id="chat-tab" class="tab-content active">
+            <div class="chat-controls">
+                <select id="chat-model">
+                    <option value="openai">OpenAI (Recommended)</option>
+                    <option value="mistral">Mistral</option>
+                    <option value="llama">Llama</option>
+                </select>
+                <button onclick="clearChat()" title="Bersihkan Chat"><i class="fas fa-trash"></i></button>
+            </div>
             <div id="chat-messages" class="chat-box">
                 <div class="message bot">
-                    Halo! Saya AI-Ku. Ada yang bisa saya bantu hari ini?
+                    Halo! Saya AI-Ku yang baru. Saya sekarang mendukung format Markdown dan bisa mengingat percakapan Anda. Ada yang bisa saya bantu?
                 </div>
             </div>
             <div class="input-area">
                 <input type="text" id="chat-input" placeholder="Tulis pesan..." onkeypress="if(event.key === 'Enter') sendMessage()">
-                <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                <button onclick="sendMessage()" id="send-btn"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
 
         <div id="image-tab" class="tab-content">
             <div class="image-generator">
+                <div class="image-controls">
+                    <select id="image-model">
+                        <option value="flux">FLUX.1 (High Quality)</option>
+                        <option value="flux-realism">FLUX Realism</option>
+                        <option value="any-dark">Any Dark</option>
+                    </select>
+                    <select id="image-ratio">
+                        <option value="1024x1024">Square (1:1)</option>
+                        <option value="1280x720">Landscape (16:9)</option>
+                        <option value="720x1280">Portrait (9:16)</option>
+                    </select>
+                </div>
                 <div class="input-area">
-                    <input type="text" id="image-prompt" placeholder="Deskripsikan gambar yang ingin dibuat...">
+                    <input type="text" id="image-prompt" placeholder="Deskripsikan gambar impianmu...">
                     <button onclick="generateImage()"><i class="fas fa-magic"></i> Buat</button>
                 </div>
                 <div id="image-result" class="image-result">
                     <p>Hasil gambar akan muncul di sini</p>
+                </div>
+                <div id="image-actions" class="image-actions" style="display: none;">
+                    <button onclick="downloadImage()"><i class="fas fa-download"></i> Download</button>
                 </div>
             </div>
         </div>
