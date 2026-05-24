@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 import requests
 import urllib.parse
+import g4f
 
 app = Flask(__name__)
 
@@ -13,8 +14,30 @@ def chat():
     data = request.json
     message = data.get('message', '')
     model = data.get('model', 'openai')
+    engine = data.get('engine', 'pollination') # pollination or ultra
+
     if not message:
         return jsonify({'error': 'No message provided'}), 400
+
+    if engine == 'ultra':
+        try:
+            # Using g4f with OperaAria (verified working)
+            # Ultra IQ Prompt
+            system_instruction = "Kamu adalah AI dengan IQ 300. Analisis setiap pertanyaan dengan logika tingkat tinggi, berikan solusi yang sangat cerdas, detail, dan efisien. Jawablah dalam bahasa Indonesia dengan format Markdown."
+
+            response = g4f.ChatCompletion.create(
+                model="gpt-4",
+                provider=g4f.Provider.OperaAria,
+                messages=[
+                    {"role": "system", "content": system_instruction},
+                    {"role": "user", "content": message}
+                ],
+            )
+            return jsonify({'response': response})
+        except Exception as e:
+            # Fallback to pollination if ultra fails
+            print(f"Ultra engine error: {e}, falling back...")
+            engine = 'pollination'
 
     try:
         # Using Pollinations.ai text API
@@ -24,8 +47,6 @@ def chat():
 
         response = requests.get(url)
         if response.status_code == 200:
-            # Pollinations might return a notice at the beginning, we might want to filter it if it's always there
-            # But usually it's just the response.
             return jsonify({'response': response.text})
         else:
             return jsonify({'error': f'Failed to get response from AI: {response.status_code}'}), 500

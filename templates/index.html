@@ -48,8 +48,12 @@
             <div id="chat-tab" class="tab-content active">
                 <div class="chat-container">
                     <div class="chat-header-info">
+                    <select id="chat-engine" onchange="updateChatUI()">
+                        <option value="pollination">Mode Standar (Fast)</option>
+                        <option value="ultra">Mode Ultra IQ (Smartest)</option>
+                    </select>
                         <select id="chat-model">
-                            <option value="openai">OpenAI (Pro)</option>
+                        <option value="openai">OpenAI (Recommended)</option>
                             <option value="mistral">Mistral AI</option>
                             <option value="llama">Meta Llama 3</option>
                         </select>

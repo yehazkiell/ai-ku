@@ -102,10 +102,29 @@ function handleChatKey(event) {
     }
 }
 
+function updateChatUI() {
+    const engine = document.getElementById('chat-engine').value;
+    const badge = document.getElementById('iq-badge');
+    const modelSelect = document.getElementById('chat-model');
+
+    if (engine === 'ultra') {
+        badge.textContent = '300 IQ';
+        badge.style.background = '#6f42c1';
+        badge.style.color = 'white';
+        modelSelect.style.display = 'none';
+    } else {
+        badge.textContent = 'Ultra';
+        badge.style.background = '#ffc107';
+        badge.style.color = '#000';
+        modelSelect.style.display = 'block';
+    }
+}
+
 async function sendMessage() {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     const model = document.getElementById('chat-model').value;
+    const engine = document.getElementById('chat-engine').value;
 
     if (!text) return;
 
@@ -121,7 +140,7 @@ async function sendMessage() {
         const response = await fetch('/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: text, model })
+            body: JSON.stringify({ message: text, model, engine })
         });
 
         const data = await response.json();
