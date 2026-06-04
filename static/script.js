@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSessions();
     switchSession(currentSessionId);
     renderImageHistory();
+    loadAPIKeys();
 
     // Auto-resize textarea
     const textarea = document.getElementById('chat-input');
@@ -342,10 +343,82 @@ function openTab(tabId) {
     document.getElementById(tabId).classList.add('active');
     // Set active button
     buttons.forEach(btn => {
-        if (btn.textContent.toLowerCase() === (tabId === 'chat-tab' ? 'chat' : 'gambar')) {
-            btn.classList.add('active');
-        }
+        const text = btn.textContent.toLowerCase();
+        if (text === 'chat' && tabId === 'chat-tab') btn.classList.add('active');
+        if (text === 'gambar' && tabId === 'image-tab') btn.classList.add('active');
+        if (text === 'developer' && tabId === 'dev-tab') btn.classList.add('active');
     });
+}
+
+// Developer API Management
+async function loadAPIKeys() {
+    const container = document.getElementById('keys-list');
+    if (!container) return;
+
+    try {
+        const response = await fetch('/developer/keys');
+        const keys = await response.json();
+
+        container.innerHTML = '';
+        if (Object.keys(keys).length === 0) {
+            container.innerHTML = '<p>Belum ada API Key. Silakan buat di atas.</p>';
+            return;
+        }
+
+        for (const [key, info] of Object.entries(keys)) {
+            const div = document.createElement('div');
+            div.className = 'key-item';
+            div.style.cssText = 'background: var(--sidebar-bg); padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border);';
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong>${info.name}</strong>
+                    <button onclick="revokeKey('${key}')" style="background: #dc3545; padding: 5px 10px; font-size: 12px;">Revoke</button>
+                </div>
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <code style="flex: 1; background: rgba(0,0,0,0.1); padding: 5px; border-radius: 5px;">${key}</code>
+                    <button onclick="navigator.clipboard.writeText('${key}')" title="Copy"><i class="far fa-copy"></i></button>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+    } catch (e) {
+        container.innerHTML = '<p>Gagal memuat API Keys.</p>';
+    }
+}
+
+async function generateAPIKey() {
+    const nameInput = document.getElementById('key-name');
+    const name = nameInput.value.trim() || 'New Key';
+
+    try {
+        const response = await fetch('/developer/keys/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        });
+        const data = await response.json();
+        if (data.key) {
+            nameInput.value = '';
+            loadAPIKeys();
+        }
+    } catch (e) {
+        alert('Gagal membuat API Key.');
+    }
+}
+
+async function revokeKey(key) {
+    if (!confirm('Hapus API Key ini? Aplikasi yang menggunakan key ini tidak akan bisa lagi mengakses API.')) return;
+
+    try {
+        await fetch('/developer/keys/revoke', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key })
+        });
+        loadAPIKeys();
+    } catch (e) {
+        alert('Gagal menghapus API Key.');
+    }
 }
 
 // Modal Management

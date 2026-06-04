@@ -2,8 +2,41 @@ from flask import Flask, request, jsonify, render_template
 import requests
 import urllib.parse
 import g4f
+import json
+import secrets
+import os
+from functools import wraps
 
 app = Flask(__name__)
+
+KEYS_FILE = 'keys.json'
+
+def load_keys():
+    if not os.path.exists(KEYS_FILE):
+        return {}
+    try:
+        with open(KEYS_FILE, 'r') as f:
+            return json.load(f)
+    except:
+        return {}
+
+def save_keys(keys):
+    with open(KEYS_FILE, 'w') as f:
+        json.dump(keys, f)
+
+def require_api_key(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        api_key = None
+        if auth_header and auth_header.startswith('Bearer '):
+            api_key = auth_header.split(' ')[1]
+
+        keys = load_keys()
+        if not api_key or api_key not in keys:
+            return jsonify({'error': 'Unauthorized: Invalid or missing API Key'}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 @app.route('/')
 def index():
@@ -50,6 +83,45 @@ def chat():
             return jsonify({'error': f'Failed to get response from AI: {response.status_code}'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/developer/keys', methods=['GET'])
+def get_user_keys():
+    return jsonify(load_keys())
+
+@app.route('/developer/keys/generate', methods=['POST'])
+def generate_key():
+    data = request.json
+    name = data.get('name', 'Default Key')
+    new_key = f"ai_ku_{secrets.token_hex(16)}"
+    keys = load_keys()
+    keys[new_key] = {
+        'name': name,
+        'created_at': urllib.parse.quote(str(os.times())) # simplified timestamp
+    }
+    save_keys(keys)
+    return jsonify({'key': new_key, 'name': name})
+
+@app.route('/developer/keys/revoke', methods=['POST'])
+def revoke_key():
+    data = request.json
+    key_to_revoke = data.get('key')
+    keys = load_keys()
+    if key_to_revoke in keys:
+        del keys[key_to_revoke]
+        save_keys(keys)
+        return jsonify({'success': True})
+    return jsonify({'error': 'Key not found'}), 404
+
+# External API V1
+@app.route('/api/v1/chat', methods=['POST'])
+@require_api_key
+def api_chat():
+    return chat()
+
+@app.route('/api/v1/generate-image', methods=['POST'])
+@require_api_key
+def api_generate_image():
+    return generate_image()
 
 @app.route('/generate-image', methods=['POST'])
 def generate_image():

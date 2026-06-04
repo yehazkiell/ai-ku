@@ -45,6 +45,7 @@
                 <div class="tabs">
                     <button class="tab-btn active" onclick="openTab('chat-tab')">Chat</button>
                     <button class="tab-btn" onclick="openTab('image-tab')">Gambar</button>
+                    <button class="tab-btn" onclick="openTab('dev-tab')">Developer</button>
                 </div>
             </header>
 
@@ -73,6 +74,36 @@
                         <div class="input-wrapper">
                             <textarea id="chat-input" placeholder="Tanyakan apa saja..." rows="1" onkeydown="handleChatKey(event)"></textarea>
                             <button onclick="sendMessage()" id="send-btn"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dev-tab" class="tab-content">
+                <div class="dev-container">
+                    <h2>Developer API Management</h2>
+                    <p>Gunakan API Key untuk mengintegrasikan AI-Ku ke dalam aplikasi Anda.</p>
+
+                    <div class="key-generator">
+                        <input type="text" id="key-name" placeholder="Nama Key (misal: My App)">
+                        <button onclick="generateAPIKey()"><i class="fas fa-plus"></i> Generate New Key</button>
+                    </div>
+
+                    <div class="keys-list-container">
+                        <h3>Your API Keys</h3>
+                        <div id="keys-list">
+                            <!-- Keys will appear here -->
+                        </div>
+                    </div>
+
+                    <div class="api-docs">
+                        <h3>API Documentation</h3>
+                        <div class="doc-item">
+                            <p><strong>Chat Endpoint:</strong> <code>POST /api/v1/chat</code></p>
+                            <pre><code class="language-bash">curl -X POST http://localhost:5000/api/v1/chat \
+-H "Authorization: Bearer YOUR_API_KEY" \
+-H "Content-Type: application/json" \
+-d '{"message": "Hello AI", "engine": "ultra"}'</code></pre>
                         </div>
                     </div>
                 </div>

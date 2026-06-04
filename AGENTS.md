@@ -32,5 +32,11 @@ The app is designed to be easily deployable on platforms like Render or Heroku.
 -   `app.py` is the entry point.
 -   Ensure `requirements.txt` is up to date with `g4f`, `flask`, and `requests`.
 
+## 🔑 API Key System
+AI-Ku now supports external API access via API Keys.
+-   **Endpoints**: `/api/v1/chat` and `/api/v1/generate-image`.
+-   **Authentication**: Bearer Token in `Authorization` header.
+-   **Management**: Admin can generate and revoke keys through the "Developer" tab in the UI. Keys are stored in `keys.json`.
+
 ---
 *Created by Jules, Senior AI Engineer.*
