@@ -3,6 +3,9 @@ import requests
 import urllib.parse
 import g4f
 import json
+import PyPDF2
+import io
+from werkzeug.utils import secure_filename
 try:
     from ddgs import DDGS
 except ImportError:
@@ -42,6 +45,48 @@ def require_api_key(f):
         return f(*args, **kwargs)
     return decorated
 
+
+def extract_text_from_file(file):
+    filename = secure_filename(file.filename)
+    if filename.endswith('.pdf'):
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text()
+        return text
+    elif filename.endswith(('.txt', '.md', '.py', '.js', '.html', '.css')):
+        return file.read().decode('utf-8')
+    return ""
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    try:
+        text = extract_text_from_file(file)
+        return jsonify({"text": text, "filename": file.filename})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/generate-title', methods=['POST'])
+def generate_title():
+    data = request.json
+    message = data.get('message', '')
+    if not message:
+        return jsonify({"title": "Chat Baru"})
+
+    try:
+        prompt = f"Berikan judul singkat (maks 3-5 kata) untuk percakapan yang dimulai dengan pesan ini: '{message}'. Balas HANYA dengan judulnya saja tanpa tanda kutip."
+        response = requests.get(f"https://text.pollinations.ai/{urllib.parse.quote(prompt)}?model=openai")
+        title = response.text.strip().replace('"', '')
+        return jsonify({"title": title})
+    except:
+        return jsonify({"title": "Chat Terpilih"})
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -75,7 +120,7 @@ def chat():
         engine = 'ultra' # Force ultra engine for Hazz models
         if model == 'hazz-1-thinking':
             custom_system = "Kamu adalah Hazz-1 Thinking. Sebelum menjawab, kamu HARUS berpikir secara mendalam dalam blok <thought>. Analisis masalah langkah demi langkah, pertimbangkan berbagai perspektif, lalu berikan jawaban final yang sangat akurat."
-        elif model == 'hazz-1-search':
+        elif model == 'hazz-1-search' or model == 'hazz-1-vision':
             search_data = search_web(message)
             message = f"{search_data}\n\nBerdasarkan data di atas, jawab pertanyaan ini: {message}"
             custom_system = "Kamu adalah Hazz-1 Search. Gunakan hasil pencarian yang diberikan untuk memberikan jawaban yang paling update dan faktual."

@@ -2,3 +2,4 @@ flask
 requests
 g4f
 duckduckgo_search
+PyPDF2

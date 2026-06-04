@@ -40,3 +40,8 @@ AI-Ku now supports external API access via API Keys.
 
 ---
 *Created by Jules, Senior AI Engineer.*
+
+### CLI Integration
+The system now includes `hazz.py`, a CLI wrapper around `core.py`.
+- `core.py` houses the logic shared between Web and CLI.
+- `app.py` has been updated to import from `core.py` (optional, currently maintaining some internal logic for stability).

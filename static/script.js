@@ -1,3 +1,15 @@
+
+const quotes = [
+    '"AI is the new electricity." - Andrew Ng',
+    '"Intelligence is the ability to adapt to change." - Stephen Hawking',
+    '"Design is not just what it looks like and feels like. Design is how it works." - Steve Jobs'
+];
+
+function updateQuote() {
+    const q = quotes[Math.floor(Math.random() * quotes.length)];
+    const el = document.getElementById('daily-quote');
+    if (el) el.textContent = q;
+}
 // Ultra State Management
 let sessions = JSON.parse(localStorage.getItem('sessions')) || [{ id: 'default', title: 'Chat Utama', messages: [] }];
 let currentSessionId = localStorage.getItem('currentSessionId') || 'default';
@@ -129,6 +141,11 @@ function updateChatUI() {
 }
 
 async function sendMessage() {
+    if (attachedFileContent) {
+        const input = document.getElementById('user-input');
+        input.value = input.value + attachedFileContent;
+        clearFile();
+    }
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     const model = document.getElementById('chat-model').value;
@@ -501,4 +518,103 @@ window.onclick = function(event) {
     if (event.target.className === 'modal') {
         event.target.style.display = "none";
     }
+}
+
+let attachedFileContent = "";
+
+async function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const btn = document.querySelector('label[for="file-upload"] i');
+    btn.className = "fas fa-spinner fa-spin";
+
+    try {
+        const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        if (data.text) {
+            attachedFileContent = `\n[DOKUMEN TERLAMPIR: ${data.filename}]\n${data.text}\n`;
+            document.getElementById('file-preview').style.display = 'flex';
+            document.getElementById('filename-display').textContent = data.filename;
+        }
+    } catch (err) {
+        alert("Gagal mengunggah file.");
+    } finally {
+        btn.className = "fas fa-paperclip";
+    }
+}
+
+function clearFile() {
+    attachedFileContent = "";
+    document.getElementById('file-upload').value = "";
+    document.getElementById('file-preview').style.display = 'none';
+}
+
+async function updateChatTitle(id, message) {
+    try {
+        const response = await fetch('/generate-title', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ message })
+        });
+        const data = await response.json();
+        const chat = chatSessions.find(s => s.id === id);
+        if (chat && data.title) {
+            chat.name = data.title;
+            saveSessions();
+            renderSessions();
+        }
+    } catch (e) {}
+}
+
+function useTool(type) {
+    showTab('chat');
+    let prompt = "";
+    switch(type) {
+        case 'translate': prompt = "Terjemahkan teks berikut ke Bahasa Indonesia: "; break;
+        case 'summarize': prompt = "Buatkan ringkasan poin-poin penting dari teks ini: "; break;
+        case 'code': prompt = "Rapikan dan jelaskan kode berikut: "; break;
+        case 'math': prompt = "Selesaikan persoalan matematika ini langkah demi langkah: "; break;
+        case 'email': prompt = "Tuliskan email profesional tentang: "; break;
+        case 'social': prompt = "Buatkan caption sosial media yang menarik untuk: "; break;
+        case 'grammar': prompt = "Perbaiki tata bahasa dan ejaan teks ini agar lebih natural: "; break;
+        case 'keyword': prompt = "Berikan daftar keyword SEO yang relevan untuk topik: "; break;
+        case 'idea': prompt = "Berikan 10 ide kreatif dan unik tentang: "; break;
+        case 'job': prompt = "Buatkan draf surat lamaran kerja (Cover Letter) untuk posisi: "; break;
+        case 'study': prompt = "Buatkan jadwal belajar efektif selama 1 minggu untuk subjek: "; break;
+        case 'diet': prompt = "Buatkan menu makanan sehat harian untuk tujuan: "; break;
+
+    }
+    document.getElementById('user-input').value = prompt;
+    document.getElementById('user-input').focus();
+}
+
+function setSpecialTheme(theme) {
+    document.body.className = theme === 'default' ? '' : 'theme-' + theme;
+    localStorage.setItem('hazz-special-theme', theme);
+}
+
+// Load saved theme
+const savedSpecialTheme = localStorage.getItem('hazz-special-theme');
+if (savedSpecialTheme) setSpecialTheme(savedSpecialTheme);
+
+function exportChat() {
+    if (!currentSession) return;
+    let text = `# Chat: ${currentSession.name}\n\n`;
+    currentSession.messages.forEach(m => {
+        text += `**${m.role.toUpperCase()}**: ${m.content}\n\n---\n\n`;
+    });
+
+    const blob = new Blob([text], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chat-${currentSession.name.toLowerCase().replace(/ /g, '-')}.md`;
+    a.click();
 }

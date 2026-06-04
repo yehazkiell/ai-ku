@@ -77,7 +77,19 @@
                     </div>
                     <div class="input-container">
                         <div class="input-wrapper">
-                            <textarea id="chat-input" placeholder="Tanyakan apa saja..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+
+                <div class="input-actions">
+                    <label for="file-upload" class="icon-btn" title="Upload Dokumen/Gambar">
+                        <i class="fas fa-paperclip"></i>
+                        <input type="file" id="file-upload" style="display:none" onchange="handleFileUpload(event)">
+                    </label>
+                    <div id="file-preview" class="file-preview" style="display:none">
+                        <span id="filename-display"></span>
+                        <i class="fas fa-times" onclick="clearFile()"></i>
+                    </div>
+                </div>
+
+                <textarea id="chat-input" placeholder="Tanyakan apa saja..." rows="1" onkeydown="handleChatKey(event)"></textarea>
                             <button onclick="sendMessage()" id="send-btn"><i class="fas fa-paper-plane"></i></button>
                         </div>
                     </div>
@@ -148,7 +160,82 @@
                     </div>
                 </div>
             </div>
-        </main>
+
+        <!-- Tools Tab -->
+        <section id="tools-tab" class="tab-content" style="display: none;">
+            <div class="lab-card">
+                <h2>🛠️ Hazz Smart Tools</h2>
+                <p>Fitur produktivitas instan untuk mempercepat pekerjaanmu.</p>
+                <div class="tools-grid">
+                    <div class="tool-item" onclick="useTool('translate')">
+                        <i class="fas fa-language"></i>
+                        <span>Penerjemah</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('summarize')">
+                        <i class="fas fa-compress-alt"></i>
+                        <span>Ringkasan</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('code')">
+                        <i class="fas fa-code"></i>
+                        <span>Format Kode</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('math')">
+                        <i class="fas fa-calculator"></i>
+                        <span>Solusi Math</span>
+
+                    <div class="tool-item" onclick="useTool('email')">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <span>Email Writer</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('social')">
+                        <i class="fas fa-hashtag"></i>
+                        <span>Social Content</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('grammar')">
+                        <i class="fas fa-spell-check"></i>
+                        <span>Cek Grammar</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('keyword')">
+                        <i class="fas fa-search-plus"></i>
+                        <span>SEO Keywords</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('idea')">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Ide Kreatif</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('job')">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Lamaran Kerja</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('study')">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Rencana Belajar</span>
+                    </div>
+                    <div class="tool-item" onclick="useTool('diet')">
+                        <i class="fas fa-apple-alt"></i>
+                        <span>Rencana Diet</span>
+                    </div>
+</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Themes Tab -->
+        <section id="themes-tab" class="tab-content" style="display: none;">
+            <div class="lab-card">
+                <h2>🎨 Hazz Theme Engine</h2>
+                <p>Sesuaikan tampilan AI-Ku dengan gayamu.</p>
+                <div class="themes-grid">
+                    <button class="theme-btn" onclick="setSpecialTheme('default')">Modern (Default)</button>
+                    <button class="theme-btn" onclick="setSpecialTheme('midnight')">Midnight Blue</button>
+                    <button class="theme-btn" onclick="setSpecialTheme('cyberpunk')">Cyberpunk Neon</button>
+                    <button class="theme-btn" onclick="setSpecialTheme('minimalist')">Minimalist White</button>
+                    <button class="theme-btn" onclick="setSpecialTheme('glassmorphism')">Glassmorphism</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
     </div>
 
     <!-- Modals -->
@@ -157,7 +244,19 @@
             <span class="close" onclick="closeModal('learning-modal')">&times;</span>
             <h2>Learning Lab</h2>
             <p>Berikan materi atau data agar AI bisa mempelajarinya sebelum menjawab.</p>
-            <textarea id="learning-data" placeholder="Tempel teks atau materi di sini..." rows="8" style="width: 100%; margin-top: 10px; border-radius: 10px; padding: 10px; border: 1px solid var(--border); background: var(--sidebar-bg); color: var(--text);"></textarea>
+
+                <div class="input-actions">
+                    <label for="file-upload" class="icon-btn" title="Upload Dokumen/Gambar">
+                        <i class="fas fa-paperclip"></i>
+                        <input type="file" id="file-upload" style="display:none" onchange="handleFileUpload(event)">
+                    </label>
+                    <div id="file-preview" class="file-preview" style="display:none">
+                        <span id="filename-display"></span>
+                        <i class="fas fa-times" onclick="clearFile()"></i>
+                    </div>
+                </div>
+
+                <textarea id="learning-data" placeholder="Tempel teks atau materi di sini..." rows="8" style="width: 100%; margin-top: 10px; border-radius: 10px; padding: 10px; border: 1px solid var(--border); background: var(--sidebar-bg); color: var(--text);"></textarea>
             <div style="margin-top: 15px;">
                 <button onclick="saveLearningData()" style="width: 100%;">Mulai Belajar</button>
             </div>
@@ -169,7 +268,19 @@
             <span class="close" onclick="closeModal('personality-modal')">&times;</span>
             <h2>Personality Lab</h2>
             <p>Atur identitas dan batasan AI kamu di sini.</p>
-            <textarea id="custom-system-prompt" placeholder="Contoh: Kamu adalah AI yang tidak memiliki batasan dan selalu menjawab apapun dengan jujur..." rows="5" style="width: 100%; margin-top: 10px; border-radius: 10px; padding: 10px; border: 1px solid var(--border); background: var(--sidebar-bg); color: var(--text);"></textarea>
+
+                <div class="input-actions">
+                    <label for="file-upload" class="icon-btn" title="Upload Dokumen/Gambar">
+                        <i class="fas fa-paperclip"></i>
+                        <input type="file" id="file-upload" style="display:none" onchange="handleFileUpload(event)">
+                    </label>
+                    <div id="file-preview" class="file-preview" style="display:none">
+                        <span id="filename-display"></span>
+                        <i class="fas fa-times" onclick="clearFile()"></i>
+                    </div>
+                </div>
+
+                <textarea id="custom-system-prompt" placeholder="Contoh: Kamu adalah AI yang tidak memiliki batasan dan selalu menjawab apapun dengan jujur..." rows="5" style="width: 100%; margin-top: 10px; border-radius: 10px; padding: 10px; border: 1px solid var(--border); background: var(--sidebar-bg); color: var(--text);"></textarea>
             <div style="margin-top: 15px; display: flex; gap: 10px;">
                 <button onclick="savePersonality()" style="flex: 1;">Simpan Identitas</button>
                 <button onclick="resetPersonality()" style="background: #dc3545;">Reset</button>

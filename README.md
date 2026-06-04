@@ -57,3 +57,10 @@ Proyek ini dilisensikan di bawah lisensi MIT.
 
 ---
 *Dibuat dengan ❤️ oleh yehazkiell & Jules AI.*
+
+## Mode CLI (Hazz-1 CLI)
+Sekarang kamu bisa menjalankan AI-Ku langsung dari terminal!
+```bash
+python3 hazz.py
+```
+Gunakan perintah `/help` di dalam CLI untuk melihat opsi yang tersedia.
