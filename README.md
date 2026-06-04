@@ -1,6 +1,6 @@
 # 🤖 AI-Ku Ultra IQ
 
-AI-Ku adalah platform AI Suite profesional yang menyediakan layanan Chat LLM dan Image Generation secara **100% GRATIS** dan **TANPA API KEY**.
+AI-Ku adalah platform AI Suite profesional yang menyediakan layanan Chat LLM dan Image Generation secara **100% GRATIS**.
 
 Platform ini dirancang untuk memberikan kecerdasan tingkat tinggi dengan antarmuka yang modern, responsif, dan kaya fitur.
 
