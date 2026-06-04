@@ -3,6 +3,7 @@ let sessions = JSON.parse(localStorage.getItem('sessions')) || [{ id: 'default',
 let currentSessionId = localStorage.getItem('currentSessionId') || 'default';
 let imageHistory = JSON.parse(localStorage.getItem('imageHistory')) || [];
 let isDarkMode = localStorage.getItem('darkMode') === 'true';
+let customSystemPrompt = localStorage.getItem('customSystemPrompt') || "Kamu adalah AI asisten yang pintar dan membantu. Jawablah dalam bahasa Indonesia. Gunakan format Markdown untuk jawaban yang panjang atau teknis.";
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -140,7 +141,12 @@ async function sendMessage() {
         const response = await fetch('/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: text, model, engine })
+            body: JSON.stringify({
+                message: text,
+                model,
+                engine,
+                system_prompt: customSystemPrompt
+            })
         });
 
         const data = await response.json();
@@ -357,6 +363,29 @@ function usePrompt(text) {
     document.getElementById('chat-input').focus();
     // trigger auto-resize
     document.getElementById('chat-input').dispatchEvent(new Event('input'));
+}
+
+function openPersonalityLab() {
+    document.getElementById('custom-system-prompt').value = customSystemPrompt;
+    document.getElementById('personality-modal').style.display = 'block';
+}
+
+function savePersonality() {
+    const prompt = document.getElementById('custom-system-prompt').value.trim();
+    if (prompt) {
+        customSystemPrompt = prompt;
+        localStorage.setItem('customSystemPrompt', customSystemPrompt);
+        alert('Identitas AI telah diperbarui!');
+        closeModal('personality-modal');
+    }
+}
+
+function resetPersonality() {
+    if (confirm('Reset identitas ke pengaturan awal?')) {
+        customSystemPrompt = "Kamu adalah AI asisten yang pintar dan membantu. Jawablah dalam bahasa Indonesia. Gunakan format Markdown untuk jawaban yang panjang atau teknis.";
+        localStorage.removeItem('customSystemPrompt');
+        document.getElementById('custom-system-prompt').value = customSystemPrompt;
+    }
 }
 
 window.onclick = function(event) {

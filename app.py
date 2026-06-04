@@ -15,6 +15,7 @@ def chat():
     message = data.get('message', '')
     model = data.get('model', 'openai')
     engine = data.get('engine', 'pollination') # pollination or ultra
+    custom_system = data.get('system_prompt', "Kamu adalah AI asisten yang pintar dan membantu. Jawablah dalam bahasa Indonesia. Gunakan format Markdown untuk jawaban yang panjang atau teknis.")
 
     if not message:
         return jsonify({'error': 'No message provided'}), 400
@@ -22,14 +23,11 @@ def chat():
     if engine == 'ultra':
         try:
             # Using g4f with OperaAria (verified working)
-            # Ultra IQ Prompt
-            system_instruction = "Kamu adalah AI dengan IQ 300. Analisis setiap pertanyaan dengan logika tingkat tinggi, berikan solusi yang sangat cerdas, detail, dan efisien. Jawablah dalam bahasa Indonesia dengan format Markdown."
-
             response = g4f.ChatCompletion.create(
                 model="gpt-4",
                 provider=g4f.Provider.OperaAria,
                 messages=[
-                    {"role": "system", "content": system_instruction},
+                    {"role": "system", "content": custom_system},
                     {"role": "user", "content": message}
                 ],
             )
@@ -42,8 +40,8 @@ def chat():
     try:
         # Using Pollinations.ai text API
         encoded_message = urllib.parse.quote(message)
-        system_prompt = urllib.parse.quote("Kamu adalah AI asisten yang pintar dan membantu. Jawablah dalam bahasa Indonesia. Gunakan format Markdown untuk jawaban yang panjang atau teknis.")
-        url = f"https://text.pollinations.ai/{encoded_message}?system={system_prompt}&model={model}"
+        encoded_system = urllib.parse.quote(custom_system)
+        url = f"https://text.pollinations.ai/{encoded_message}?system={encoded_system}&model={model}"
 
         response = requests.get(url)
         if response.status_code == 200:
