@@ -135,6 +135,36 @@ header h1 { font-size: 18px; margin: 0; }
 .message pre { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 10px; overflow-x: auto; margin: 10px 0; }
 .copy-btn { position: absolute; top: 5px; right: 5px; background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px; border-radius: 4px; cursor: pointer; font-size: 12px; }
 
+/* Thought Container Styling */
+.thought-container {
+    background: rgba(0,0,0,0.03);
+    border-left: 3px solid #6f42c1;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    transition: 0.3s;
+}
+.dark-mode .thought-container { background: rgba(255,255,255,0.03); }
+.thought-header {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #6f42c1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(111, 66, 193, 0.05);
+}
+.thought-body {
+    padding: 12px;
+    font-size: 14px;
+    font-style: italic;
+    opacity: 0.8;
+}
+.thought-container.collapsed .thought-body { display: none; }
+.thought-container.collapsed .thought-header::after { content: ' (klik untuk melihat)'; font-weight: normal; opacity: 0.6; font-size: 11px; }
+
 /* Input */
 .input-container { padding: 20px; border-top: 1px solid var(--border); }
 .input-wrapper {

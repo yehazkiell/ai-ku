@@ -4,6 +4,7 @@ let currentSessionId = localStorage.getItem('currentSessionId') || 'default';
 let imageHistory = JSON.parse(localStorage.getItem('imageHistory')) || [];
 let isDarkMode = localStorage.getItem('darkMode') === 'true';
 let customSystemPrompt = localStorage.getItem('customSystemPrompt') || "Kamu adalah AI asisten yang pintar dan membantu. Jawablah dalam bahasa Indonesia. Gunakan format Markdown untuk jawaban yang panjang atau teknis.";
+let learnedContent = "";
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -106,18 +107,23 @@ function handleChatKey(event) {
 
 function updateChatUI() {
     const engine = document.getElementById('chat-engine').value;
+    const model = document.getElementById('chat-model').value;
     const badge = document.getElementById('iq-badge');
     const modelSelect = document.getElementById('chat-model');
 
-    if (engine === 'ultra') {
-        badge.textContent = '300 IQ';
+    if (engine === 'ultra' || model.startsWith('hazz-')) {
+        badge.textContent = model === 'hazz-1-ultra' ? '300+ IQ' : 'Ultra';
         badge.style.background = '#6f42c1';
         badge.style.color = 'white';
-        modelSelect.style.display = 'none';
     } else {
-        badge.textContent = 'Ultra';
+        badge.textContent = 'Standard';
         badge.style.background = '#ffc107';
         badge.style.color = '#000';
+    }
+
+    if (engine === 'ultra') {
+        modelSelect.style.display = 'none';
+    } else {
         modelSelect.style.display = 'block';
     }
 }
@@ -146,7 +152,8 @@ async function sendMessage() {
                 message: text,
                 model,
                 engine,
-                system_prompt: customSystemPrompt
+                system_prompt: customSystemPrompt,
+                learning_content: learnedContent
             })
         });
 
@@ -191,7 +198,22 @@ function appendMessage(sender, text, id = null, animate = true) {
 
 function formatMarkdown(text) {
     if (text.includes('loader')) return text;
-    const rawHtml = marked.parse(text);
+
+    // Extract Thought block if present
+    let thoughtHtml = "";
+    const thoughtMatch = text.match(/<thought>([\s\S]*?)<\/thought>/);
+    if (thoughtMatch) {
+        const thoughtContent = thoughtMatch[1].trim();
+        thoughtHtml = `<div class="thought-container">
+            <div class="thought-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <i class="fas fa-brain"></i> Proses Berpikir Hazz-1
+            </div>
+            <div class="thought-body">${marked.parse(thoughtContent)}</div>
+        </div>`;
+        text = text.replace(/<thought>[\s\S]*?<\/thought>/, "");
+    }
+
+    const rawHtml = thoughtHtml + marked.parse(text);
     const cleanHtml = DOMPurify.sanitize(rawHtml);
 
     // Process code blocks for copy button and highlighting
@@ -458,6 +480,20 @@ function resetPersonality() {
         customSystemPrompt = "Kamu adalah AI asisten yang pintar dan membantu. Jawablah dalam bahasa Indonesia. Gunakan format Markdown untuk jawaban yang panjang atau teknis.";
         localStorage.removeItem('customSystemPrompt');
         document.getElementById('custom-system-prompt').value = customSystemPrompt;
+    }
+}
+
+function openLearningLab() {
+    document.getElementById('learning-data').value = learnedContent;
+    document.getElementById('learning-modal').style.display = 'block';
+}
+
+function saveLearningData() {
+    const data = document.getElementById('learning-data').value.trim();
+    learnedContent = data;
+    if (data) {
+        alert('AI telah menyerap materi baru!');
+        closeModal('learning-modal');
     }
 }
 

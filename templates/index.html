@@ -33,6 +33,9 @@
                 <button onclick="openPersonalityLab()" class="footer-btn">
                     <i class="fas fa-flask"></i> <span class="btn-text">Personality Lab</span>
                 </button>
+                <button onclick="openLearningLab()" class="footer-btn">
+                    <i class="fas fa-brain"></i> <span class="btn-text">Learning Lab</span>
+                </button>
             </div>
         </aside>
 
@@ -58,9 +61,11 @@
                     </select>
                         <select id="chat-model">
                         <option value="openai">OpenAI (Recommended)</option>
+                        <option value="hazz-1-thinking">Hazz-1 Thinking (Smartest)</option>
+                        <option value="hazz-1-search">Hazz-1 Search (Web Access)</option>
+                        <option value="hazz-1-ultra">Hazz-1 Ultra (Pro)</option>
                             <option value="mistral">Mistral AI</option>
                             <option value="llama">Meta Llama 3</option>
-                        <option value="searchgpt">SearchGPT</option>
                         </select>
                         <div class="chat-actions">
                             <button onclick="startSTT()" title="Voice Input"><i class="fas fa-microphone"></i></button>
@@ -147,6 +152,18 @@
     </div>
 
     <!-- Modals -->
+    <div id="learning-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('learning-modal')">&times;</span>
+            <h2>Learning Lab</h2>
+            <p>Berikan materi atau data agar AI bisa mempelajarinya sebelum menjawab.</p>
+            <textarea id="learning-data" placeholder="Tempel teks atau materi di sini..." rows="8" style="width: 100%; margin-top: 10px; border-radius: 10px; padding: 10px; border: 1px solid var(--border); background: var(--sidebar-bg); color: var(--text);"></textarea>
+            <div style="margin-top: 15px;">
+                <button onclick="saveLearningData()" style="width: 100%;">Mulai Belajar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="personality-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('personality-modal')">&times;</span>

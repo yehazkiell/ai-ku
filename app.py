@@ -3,6 +3,10 @@ import requests
 import urllib.parse
 import g4f
 import json
+try:
+    from ddgs import DDGS
+except ImportError:
+    from duckduckgo_search import DDGS
 import secrets
 import os
 from functools import wraps
@@ -42,16 +46,44 @@ def require_api_key(f):
 def index():
     return render_template('index.html')
 
+def search_web(query):
+    try:
+        with DDGS() as ddgs:
+            results = ddgs.text(query, max_results=5)
+            search_context = "\nHasil Pencarian Terkini:\n"
+            for r in results:
+                search_context += f"- {r['title']}: {r['body']} (Link: {r['href']})\n"
+            return search_context
+    except Exception as e:
+        print(f"Search error: {e}")
+        return ""
+
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.json
     message = data.get('message', '')
     model = data.get('model', 'openai')
-    engine = data.get('engine', 'pollination') # pollination or ultra
+    engine = data.get('engine', 'pollination')
     custom_system = data.get('system_prompt', "Kamu adalah AI asisten yang pintar dan membantu. Jawablah dalam bahasa Indonesia. Gunakan format Markdown untuk jawaban yang panjang atau teknis.")
+    learning_content = data.get('learning_content', '')
 
     if not message:
         return jsonify({'error': 'No message provided'}), 400
+
+    # Hazz Model Logic
+    if model.startswith('hazz-'):
+        engine = 'ultra' # Force ultra engine for Hazz models
+        if model == 'hazz-1-thinking':
+            custom_system = "Kamu adalah Hazz-1 Thinking. Sebelum menjawab, kamu HARUS berpikir secara mendalam dalam blok <thought>. Analisis masalah langkah demi langkah, pertimbangkan berbagai perspektif, lalu berikan jawaban final yang sangat akurat."
+        elif model == 'hazz-1-search':
+            search_data = search_web(message)
+            message = f"{search_data}\n\nBerdasarkan data di atas, jawab pertanyaan ini: {message}"
+            custom_system = "Kamu adalah Hazz-1 Search. Gunakan hasil pencarian yang diberikan untuk memberikan jawaban yang paling update dan faktual."
+        elif model == 'hazz-1-ultra':
+            custom_system = "Kamu adalah Hazz-1 Ultra, model AI paling cerdas dengan IQ 300+. Berikan jawaban yang sangat jenius, filosofis, dan teknis jika diperlukan."
+
+    if learning_content:
+        message = f"Konteks Pembelajaran: {learning_content}\n\nPertanyaan: {message}"
 
     if engine == 'ultra':
         try:

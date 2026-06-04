@@ -1,14 +1,16 @@
 # 🤖 AI-Ku Ultra IQ
 
-AI-Ku adalah platform AI Suite profesional yang menyediakan layanan Chat LLM dan Image Generation secara **100% GRATIS**.
+AI-Ku adalah platform AI Suite profesional yang menyediakan layanan Chat LLM dan Image Generation secara **100% GRATIS** dan **TANPA API KEY**.
 
 Platform ini dirancang untuk memberikan kecerdasan tingkat tinggi dengan antarmuka yang modern, responsif, dan kaya fitur.
 
 ## ✨ Fitur Utama
 
--   **🧠 Dual-Engine Intelligence**:
-    -   **Mode Standar (Fast)**: Didukung oleh Pollinations.ai untuk respon cepat.
-    -   **Mode Ultra IQ (300 IQ)**: Menggunakan engine `g4f` yang dioptimalkan untuk logika dan analisis tingkat tinggi.
+-   **🧠 Hazz Intelligence Series**:
+    -   **Hazz-1 Thinking**: Model yang dirancang untuk berpikir mendalam (Chain-of-Thought) sebelum menjawab.
+    -   **Hazz-1 Search**: Dilengkapi akses web real-time untuk jawaban paling update.
+    -   **Hazz-1 Ultra**: Model IQ 300+ untuk penyelesaian masalah paling kompleks.
+-   **📚 Learning Lab**: Kemampuan AI untuk mempelajari materi atau data yang Anda berikan sebelum mulai berdiskusi.
 -   **🎨 Advanced Image Generation**: Membuat gambar berkualitas tinggi dengan model FLUX.1, Realism, dan lainnya. Dilengkapi dengan pengaturan rasio (1:1, 16:9, 9:16).
 -   **🧪 Personality Lab**: Kustomisasi identitas AI Anda sendiri! Atur *System Prompt* untuk membuat AI yang tanpa batasan, edukatif, atau sesuai persona yang Anda inginkan.
 -   **🔑 Developer API System**: Buat API Key Anda sendiri dan integrasikan kekuatan AI-Ku ke dalam aplikasi Anda melalui endpoint `/api/v1/`.
