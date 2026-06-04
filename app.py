@@ -88,6 +88,8 @@ def chat():
 def get_user_keys():
     return jsonify(load_keys())
 
+from datetime import datetime
+
 @app.route('/developer/keys/generate', methods=['POST'])
 def generate_key():
     data = request.json
@@ -96,7 +98,7 @@ def generate_key():
     keys = load_keys()
     keys[new_key] = {
         'name': name,
-        'created_at': urllib.parse.quote(str(os.times())) # simplified timestamp
+        'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     save_keys(keys)
     return jsonify({'key': new_key, 'name': name})
