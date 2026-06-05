@@ -6,7 +6,7 @@
   "dependencies": {
     "ai-ku": "https://github.com/yehazkiell/ai-ku"
   },
-  "bin": { "hazz": "hazz.py" }, "scripts": {
+  "bin": { "hazz": "hazz.py" }, "scripts": { "start": "python3 hazz.py",
     "start": "python3 app.py"
   },
   "author": "yehazkiell",

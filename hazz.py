@@ -1,95 +1,170 @@
 import sys
 import os
 import time
+import secrets
+import PyPDF2
 from core import get_ai_response, generate_image
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def print_slow(text):
+def print_slow(text, color="\033[0m"):
+    sys.stdout.write(color)
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
         time.sleep(0.005)
-    print()
+    print("\033[0m")
+
+def extract_text(filepath):
+    if not os.path.exists(filepath):
+        return None, "File tidak ditemukan."
+    try:
+        if filepath.endswith('.pdf'):
+            with open(filepath, 'rb') as f:
+                pdf = PyPDF2.PdfReader(f)
+                text = ""
+                for page in pdf.pages:
+                    text += page.extract_text()
+                return text, None
+        else:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                return f.read(), None
+    except Exception as e:
+        return None, str(e)
 
 def main():
     clear_screen()
-    print("\033[95m" + "="*50)
-    print("      🚀 HAZZ-1 SUPER AI - CLI EDITION 🚀")
-    print("="*50 + "\033[0m")
-    print("Ketik '/help' untuk melihat perintah.")
-    print("Ketik '/exit' untuk keluar.\n")
+    print("\033[95m" + "╔" + "═"*58 + "╗")
+    print("║" + " "*21 + "🚀 HAZZ-1 SUPER CLI 🚀" + " "*21 + "║")
+    print("║" + " "*17 + "Intelligence Series (Ver 2.0)" + " "*18 + "║")
+    print("╚" + "═"*58 + "╝" + "\033[0m")
+    print("Ketik \033[92m/help\033[0m untuk perintah lengkap.")
+    print("Ketik \033[91m/exit\033[0m untuk keluar.\n")
 
     history = []
     current_model = 'hazz-1-ultra'
     current_engine = 'ultra'
+    attached_context = ""
+    custom_personality = ""
 
     while True:
         try:
-            user_input = input(f"\033[94m[Hazz-{current_model.split('-')[-1]}] User:\033[0m ").strip()
+            model_name = current_model.split('-')[-1].upper()
+            user_input = input(f"\033[94m[{model_name}] User »\033[0m ").strip()
 
             if not user_input:
                 continue
 
             if user_input.lower() == '/exit':
-                print("\n\033[93mSampai jumpa! Hazz-1 pamit.\033[0m")
+                print_slow("\n[Hazz-1] Sampai jumpa di dimensi lain! 🌌", "\033[93m")
                 break
 
             if user_input.lower() == '/help':
-                print("\n\033[92mPerintah yang tersedia:")
-                print("- /model [ultra/thinking/search/vision] : Ganti model")
-                print("- /engine [ultra/fast] : Ganti engine")
-                print("- /image [prompt] : Generate gambar")
-                print("- /clear : Bersihkan layar")
-                print("- /history : Tampilkan riwayat percakapan")
-                print("- /exit : Keluar\033[0m\n")
+                print("\n\033[96m💠 PERINTAH NAVIGASI:")
+                print("  /model [ultra/thinking/search/vision] : Ganti mode AI")
+                print("  /engine [ultra/fast]                 : Ganti engine respon")
+                print("  /clear                               : Bersihkan terminal")
+
+                print("\n\033[92m💠 FITUR LANJUTAN:")
+                print("  /load [path_file]    : Analisis dokumen (PDF/TXT)")
+                print("  /image [prompt]      : Generate gambar (Flux)")
+                print("  /personality [text]  : Setel kepribadian custom")
+                print("  /reset               : Reset chat & context")
+                print("  /tools               : Daftar shortcut perintah")
+
+                print("\n\033[93m💠 STATUS:")
+                print(f"  Current: {current_model} | {current_engine}")
+                print(f"  Context: {'Aktif' if attached_context else 'Kosong'}\033[0m\n")
                 continue
 
-            if user_input.lower() == '/clear':
-                clear_screen()
+            if user_input.lower() == '/reset':
+                history = []
+                attached_context = ""
+                custom_personality = ""
+                print("\033[92m[Sistem] Memori dan konteks telah dibersihkan.\033[0m\n")
+                continue
+
+            if user_input.lower() == '/tools':
+                print("\n\033[95m🛠️ QUICK TOOLS:")
+                print("  /t [text] : Translate ke Indo")
+                print("  /s [text] : Ringkas teks")
+                print("  /c [text] : Rapikan kode")
+                print("  /m [text] : Selesaikan matematika\033[0m\n")
                 continue
 
             if user_input.startswith('/model '):
-                m = user_input.split(' ')[1]
+                m = user_input.split(' ')[1].lower()
                 if m in ['ultra', 'thinking', 'search', 'vision']:
                     current_model = f'hazz-1-{m}'
-                    print(f"\033[92mModel diganti ke {current_model}\033[0m\n")
+                    print(f"\033[92m[Sistem] Mode beralih ke {current_model.upper()}\033[0m\n")
                 continue
 
-            if user_input.startswith('/engine '):
-                e = user_input.split(' ')[1]
-                if e in ['ultra', 'fast']:
-                    current_engine = e
-                    print(f"\033[92mEngine diganti ke {current_engine}\033[0m\n")
+            if user_input.startswith('/load '):
+                path = user_input[6:].strip()
+                print(f"\033[93m[Sistem] Membaca {path}...\033[0m")
+                text, err = extract_text(path)
+                if err:
+                    print(f"\033[91mError: {err}\033[0m\n")
+                else:
+                    attached_context = f"\n[FILE: {path}]\n{text}\n"
+                    print(f"\033[92m[Sistem] File dimuat! Silakan tanya tentang file ini.\033[0m\n")
+                    current_model = 'hazz-1-vision'
                 continue
+
+            if user_input.startswith('/personality '):
+                custom_personality = user_input[13:].strip()
+                print(f"\033[92m[Sistem] Kepribadian baru ditetapkan.\033[0m\n")
+                continue
+
+            # Tool Shortcuts
+            if user_input.startswith('/t '): user_input = "Translate ke Indonesia: " + user_input[3:]
+            elif user_input.startswith('/s '): user_input = "Ringkas teks ini: " + user_input[3:]
+            elif user_input.startswith('/c '): user_input = "Format dan jelaskan kode ini: " + user_input[3:]
+            elif user_input.startswith('/m '): user_input = "Selesaikan soal matematika ini: " + user_input[3:]
 
             if user_input.startswith('/image '):
                 prompt = user_input[7:]
-                print("\033[93mMenggenerasi gambar...\033[0m")
+                print("\033[93m🎨 Menggenerasi visual...\033[0m")
                 url = generate_image(prompt)
-                print(f"\033[92mGambar berhasil dibuat: {url}\033[0m\n")
+                print(f"\033[92mLink Gambar: {url}\033[0m\n")
                 continue
 
-            # Standard Chat
-            print("\033[95mHazz-1 sedang berpikir...\033[0m", end="\r")
-            response = get_ai_response(user_input, model=current_model, engine=current_engine, history=history)
+            # API Call
+            print("\033[95mThinking...\033[0m", end="\r")
 
-            # Remove "Hazz-1 sedang berpikir..."
+            # Combine custom personality with model prompt
+            full_context = attached_context
+            if custom_personality:
+                full_context = f"PERSONA: {custom_personality}\n{full_context}"
+
+            response = get_ai_response(user_input, model=current_model, engine=current_engine, history=history, context=full_context)
+
             sys.stdout.write("\033[K")
+            print(f"\n\033[96mAI »\033[0m")
 
-            print(f"\n\033[96mAI:\033[0m")
-            print_slow(response)
+            # Handling thought blocks visually in CLI
+            if "<thought>" in response:
+                thought, clean_resp = response.split("</thought>")
+                thought = thought.replace("<thought>", "").strip()
+                print(f"\033[90m[Thought Process]\033[0m\n\033[90m{thought}\033[0m\n")
+                print_slow(clean_resp.strip())
+            else:
+                print_slow(response)
+
             print()
 
             history.append({"role": "user", "content": user_input})
             history.append({"role": "assistant", "content": response})
 
+            if len(history) > 20: # Keep memory manageable
+                history = history[-20:]
+
         except KeyboardInterrupt:
-            print("\n\033[93mKeluar...\033[0m")
+            print("\n\033[93m[Sistem] Interupsi terdeteksi. Keluar...\033[0m")
             break
         except Exception as e:
-            print(f"\n\033[91mTerjadi kesalahan: {e}\033[0m\n")
+            print(f"\n\033[91m[Error] {e}\033[0m\n")
 
 if __name__ == "__main__":
     main()
