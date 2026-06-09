@@ -1,38 +1,48 @@
-# AI-Ku Hazz Series (CLI Edition) 🚀
+# AI-Ku Hazz Series (CLI & API Edition) 🚀
 
-AI Chatbot cerdas berbasis Terminal yang 100% gratis, tanpa API Key, dan memiliki kecerdasan setara Gemini-3/GPT-4.
+AI Chatbot cerdas yang dioptimalkan untuk **RAM Rendah (~200MB)**. 100% gratis, tanpa API Key, dan memiliki fitur search gratis.
 
 ## ✨ Fitur Utama
-- **Hazz-1 Intelligence**: Pilihan model Ultra, Thinking (Chain of Thought), Search (Web Access), dan Vision (Doc Analysis).
-- **Zero API Key**: Menggunakan engine Pollinations & G4F secara cerdas.
-- **Document Analysis**: Load file PDF atau TXT langsung ke dalam chat context.
-- **Image Generation**: Buat gambar berkualitas tinggi (Flux) langsung dari terminal.
-- **Smart Tools**: Shortcut untuk translate, ringkasan, format kode, dan matematika.
-- **Custom Persona**: Atur kepribadian AI sesuai keinginanmu.
+- **Dual Mode**: Gunakan via Terminal (`hazz.py`) atau sebagai API untuk Bot (`app.py`).
+- **Low RAM Footprint**: Dirancang khusus agar ringan (~200MB RAM) untuk server kecil.
+- **Hazz-1 Intelligence**: Model Ultra, Thinking, Search (Web), dan Vision (PDF/TXT).
+- **Free Search & Images**: Akses informasi real-time dan generate gambar (Flux) tanpa biaya.
 
-## 🚀 Instalasi & Penggunaan
+## 🚀 Instalasi
 
-1. **Clone & Install**
-   ```bash
-   git clone https://github/yehazkiell/ai-ku
-   cd ai-ku
-   chmod +x install.sh
-   ./install.sh
-   ```
+```bash
+git clone https://github/yehazkiell/ai-ku
+cd ai-ku
+./install.sh
+```
 
-2. **Jalankan AI**
-   ```bash
-   python3 hazz.py
-   ```
+## 🤖 Penggunaan via API (Untuk Bot)
 
-## 🛠️ Perintah CLI
-- `/model [type]` : Ganti mode AI (ultra/thinking/search/vision).
-- `/load [path]`  : Baca file PDF/TXT untuk dianalisis.
-- `/image [prompt]`: Generate gambar.
-- `/personality [text]`: Setel sifat AI.
-- `/tools`        : Lihat shortcut produktivitas.
-- `/reset`        : Bersihkan riwayat chat.
-- `/help`         : Bantuan lengkap.
+Jalankan server:
+```bash
+python3 app.py
+```
+
+Contoh Request:
+```python
+import requests
+
+payload = {
+    "message": "Siapa juara F1 2023?",
+    "model": "hazz-1-search"
+}
+response = requests.post("http://localhost:5000/api/v1/chat", json=payload)
+print(response.json()['response'])
+```
+
+## 💻 Penggunaan via CLI
+
+Jalankan terminal AI:
+```bash
+python3 hazz.py
+```
+
+Gunakan perintah `/help` untuk navigasi.
 
 ## 📦 Lisensi
 MIT - 2024 AI-Ku Team

@@ -57,7 +57,7 @@ def main():
                 continue
 
             if user_input.lower() == '/exit':
-                print_slow("\n[Hazz-1] Sampai jumpa di dimensi lain! 🌌", "\033[93m")
+                print_slow("\n[Hazz-1] Sampai jumpa! 🌌", "\033[93m")
                 break
 
             if user_input.lower() == '/help':
@@ -108,7 +108,7 @@ def main():
                     print(f"\033[91mError: {err}\033[0m\n")
                 else:
                     attached_context = f"\n[FILE: {path}]\n{text}\n"
-                    print(f"\033[92m[Sistem] File dimuat! Silakan tanya tentang file ini.\033[0m\n")
+                    print(f"\033[92m[Sistem] File dimuat!\033[0m\n")
                     current_model = 'hazz-1-vision'
                 continue
 
@@ -117,7 +117,6 @@ def main():
                 print(f"\033[92m[Sistem] Kepribadian baru ditetapkan.\033[0m\n")
                 continue
 
-            # Tool Shortcuts
             if user_input.startswith('/t '): user_input = "Translate ke Indonesia: " + user_input[3:]
             elif user_input.startswith('/s '): user_input = "Ringkas teks ini: " + user_input[3:]
             elif user_input.startswith('/c '): user_input = "Format dan jelaskan kode ini: " + user_input[3:]
@@ -130,10 +129,8 @@ def main():
                 print(f"\033[92mLink Gambar: {url}\033[0m\n")
                 continue
 
-            # API Call
             print("\033[95mThinking...\033[0m", end="\r")
 
-            # Combine custom personality with model prompt
             full_context = attached_context
             if custom_personality:
                 full_context = f"PERSONA: {custom_personality}\n{full_context}"
@@ -143,12 +140,14 @@ def main():
             sys.stdout.write("\033[K")
             print(f"\n\033[96mAI »\033[0m")
 
-            # Handling thought blocks visually in CLI
             if "<thought>" in response:
-                thought, clean_resp = response.split("</thought>")
-                thought = thought.replace("<thought>", "").strip()
-                print(f"\033[90m[Thought Process]\033[0m\n\033[90m{thought}\033[0m\n")
-                print_slow(clean_resp.strip())
+                try:
+                    thought, clean_resp = response.split("</thought>")
+                    thought = thought.replace("<thought>", "").strip()
+                    print(f"\033[90m[Thought Process]\033[0m\n\033[90m{thought}\033[0m\n")
+                    print_slow(clean_resp.strip())
+                except:
+                    print_slow(response)
             else:
                 print_slow(response)
 
@@ -157,11 +156,11 @@ def main():
             history.append({"role": "user", "content": user_input})
             history.append({"role": "assistant", "content": response})
 
-            if len(history) > 20: # Keep memory manageable
+            if len(history) > 20:
                 history = history[-20:]
 
         except KeyboardInterrupt:
-            print("\n\033[93m[Sistem] Interupsi terdeteksi. Keluar...\033[0m")
+            print("\n\033[93m[Sistem] Keluar...\033[0m")
             break
         except Exception as e:
             print(f"\n\033[91m[Error] {e}\033[0m\n")

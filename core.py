@@ -1,7 +1,6 @@
 import requests
 import urllib.parse
 import g4f
-import json
 import secrets
 try:
     from ddgs import DDGS
@@ -53,7 +52,6 @@ def get_ai_response(message, model='hazz-1-ultra', engine='ultra', history=[], c
             )
             return response
         else:
-            # Pollinations
             encoded_prompt = urllib.parse.quote(f"{prompt}\n\nUser: {final_message}")
             resp = requests.get(f"https://text.pollinations.ai/{encoded_prompt}")
             return resp.text
