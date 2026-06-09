@@ -181,12 +181,21 @@ def main():
             elif user_input.startswith('/c '): user_input = "Format dan jelaskan kode ini: " + user_input[3:]
             elif user_input.startswith('/m '): user_input = "Selesaikan soal matematika ini: " + user_input[3:]
 
+
             if user_input.startswith('/image '):
+                parts = user_input.split(' ')
                 prompt = user_input[7:]
-                print("\033[93m🎨 Menggenerasi visual...\033[0m")
-                url = generate_image(prompt)
+                style = 'realistic'
+                if '--style' in user_input:
+                    style = user_input.split('--style')[1].strip().split(' ')[0]
+                    prompt = prompt.split('--style')[0].strip()
+
+                print(f"[93m🎨 Style: {style} | Menggenerasi...[0m")
+                from core import generate_image
+                url = generate_image(prompt, style=style)
                 print(f"\033[92mLink Gambar: {url}\033[0m\n")
                 continue
+
 
             print("\033[95mThinking...\033[0m", end="\r")
 

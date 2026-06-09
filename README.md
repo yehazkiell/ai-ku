@@ -167,3 +167,15 @@ client.login('TOKEN_DISCORD_KAMU');
 - **Mode Agent**: Gunakan endpoint `/api/v1/agent` jika ingin bot kamu bisa melakukan riset otonom sebelum menjawab.
 
 ---
+
+## 🎨 Hazz Image Studio
+Kamu bisa mengatur style gambar di CLI:
+- `/image [prompt] --style anime`
+- `/image [prompt] --style realistic`
+- `/image [prompt] --style digital-art`
+
+## 🛠️ Power User Tools
+Shortcut baru untuk efisiensi tinggi:
+- `/audit`    : Audit keamanan kode.
+- `/refactor` : Optimasi kode.
+- `/doc`      : Buat dokumentasi teknis otomatis.
