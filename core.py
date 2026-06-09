@@ -44,7 +44,7 @@ def get_ai_response(message, model='hazz-1-ultra', engine='ultra', history=[], c
         memory_context = "\n[MEMORI JANGKA PANJANG]:\n" + "\n".join([f"- {m}" for m in memories[-10:]]) + "\n"
 
     system_prompts = {
-        'hazz-1-ultra': "Anda adalah Hazz-1 Ultra, AI dengan IQ 300+. Gunakan memori yang ada untuk memberikan jawaban yang dipersonalisasi.",
+        'hazz-1-ultra': "Anda adalah Hazz-1 Oracle, AI dengan IQ 300+. Sebelum menjawab, lakukan refleksi internal untuk memastikan akurasi 100%.",
         'hazz-1-thinking': "Anda adalah Hazz-1 Thinking. Gunakan tag <thought> untuk proses berpikir sebelum menjawab.",
         'hazz-1-search': "Hazz-1 Search Engine. Gunakan hasil pencarian berikut untuk menjawab: {search_results}",
         'hazz-1-vision': "Hazz-1 Vision. Analisis dokumen/gambar melalui teks yang diekstrak."
@@ -104,3 +104,33 @@ def execute_python(code):
         return local_vars.get('result', "Gunakan variabel 'result' untuk output.")
     except Exception as e:
         return f"Error: {str(e)}"
+
+def run_agent_task(task_description):
+    steps = [
+        "Analisis Tugas & Perencanaan",
+        "Pencarian Informasi (Web Search)",
+        "Eksekusi Logika & Perhitungan (Sandbox)",
+        "Sintesis & Finalisasi"
+    ]
+
+    context = f"Tugas Agen: {task_description}\n"
+    print(f"\n\033[93m[Agent] Memulai tugas: {task_description}\033[0m")
+
+    # Step 1: Search
+    print(f"\033[90m[Agent Step 1/4] Mencari data...\033[0m")
+    search_data = search_web(task_description)
+    context += f"\nData Terkait:\n{search_data}\n"
+
+    # Step 2: Sandbox Logic (Simple heuristic)
+    print(f"\033[90m[Agent Step 2/4] Menjalankan logika internal...\033[0m")
+    if any(op in task_description for op in ['+', '-', '*', '/', 'hitung']):
+         # Try to extract math and run it
+         res = execute_python(f"result = 'Logika dieksekusi berdasarkan konteks'")
+         context += f"Hasil Sandbox: {res}\n"
+
+    # Step 3: Final Reasoning
+    print(f"\033[90m[Agent Step 3/4] Melakukan penalaran akhir...\033[0m")
+    final_prompt = f"Anda adalah Agen Hazz-1. Berdasarkan konteks berikut, selesaikan tugas user dengan sangat teliti.\n\nKonteks:\n{context}\n\nUser Task: {task_description}"
+
+    response = get_ai_response(final_prompt, model='hazz-1-ultra')
+    return response

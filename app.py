@@ -32,6 +32,18 @@ def image_api():
     url = generate_image(prompt, model=model)
     return jsonify({"url": url})
 
+
+@app.route('/api/v1/agent', methods=['POST'])
+def agent_api():
+    data = request.json
+    task = data.get('task')
+    if not task:
+        return jsonify({"error": "Task is required"}), 400
+
+    from core import run_agent_task
+    response = run_agent_task(task)
+    return jsonify({"response": response})
+
 @app.route('/status', methods=['GET'])
 def status():
     return jsonify({"status": "online", "message": "Hazz-1 API is running with low RAM footprint (approx 200MB)"})

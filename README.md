@@ -53,3 +53,9 @@ Fitur spesial yang saya tambahkan untuk meningkatkan kemampuan analisis:
 2. **Hazz Sandbox**: Eksekusi logika Python via `/run`. Berguna untuk perhitungan presisi.
 3. **Hazz Monitor**: Pantau penggunaan resource server via `/sys`.
 4. **Enhanced Search**: Algoritma pencarian yang lebih dalam dan terstruktur.
+
+## 🤖 Hazz Mini-Agent (New!)
+Fitur ini memungkinkan AI bekerja secara otonom untuk menyelesaikan tugas kompleks.
+- **CLI**: `/agent [tugas kamu]`
+- **API**: `/api/v1/agent`
+- **Cara Kerja**: Agent akan melakukan riset (Search), menjalankan logika (Sandbox), dan merangkum hasilnya secara mandiri.

@@ -68,6 +68,19 @@ def main():
                 print(f"\033[92m[Brain] Memori baru disimpan: {fact}\033[0m\n")
                 continue
 
+
+            if user_input.startswith('/agent '):
+                task = user_input[7:].strip()
+                from core import run_agent_task
+                print("\033[95m[Oracle] Mengaktifkan Agent Mode...\033[0m")
+                response = run_agent_task(task)
+                print(f"\n\033[96m[Agent Result] »\033[0m")
+                print_slow(response)
+                print()
+                history.append({"role": "user", "content": f"Agent Task: {task}"})
+                history.append({"role": "assistant", "content": response})
+                continue
+
             if user_input.startswith('/run '):
                 code = user_input[5:].strip()
                 from core import execute_python
@@ -99,6 +112,7 @@ def main():
                 print("  /sys                 : Monitor RAM & CPU")
                 print("  /learn [fakta]       : Simpan memori permanen")
                 print("  /run [python]        : Jalankan kode logika")
+                print("  /agent [tugas]       : Aktifkan AI Agent Mini")
 
                 print("\n\033[93m💠 STATUS:")
                 print(f"  Current: {current_model} | {current_engine}")
