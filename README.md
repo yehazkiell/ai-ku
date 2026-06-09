@@ -46,3 +46,10 @@ Gunakan perintah `/help` untuk navigasi.
 
 ## 📦 Lisensi
 MIT - 2024 AI-Ku Team
+
+## 🧠 Hazz Intelligence Extensions (New!)
+Fitur spesial yang saya tambahkan untuk meningkatkan kemampuan analisis:
+1. **Hazz Brain**: Memori jangka panjang yang tersimpan di `memory.json`. Gunakan `/learn` untuk mengajari AI.
+2. **Hazz Sandbox**: Eksekusi logika Python via `/run`. Berguna untuk perhitungan presisi.
+3. **Hazz Monitor**: Pantau penggunaan resource server via `/sys`.
+4. **Enhanced Search**: Algoritma pencarian yang lebih dalam dan terstruktur.

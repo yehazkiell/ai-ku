@@ -60,6 +60,30 @@ def main():
                 print_slow("\n[Hazz-1] Sampai jumpa! 🌌", "\033[93m")
                 break
 
+
+            if user_input.startswith('/learn '):
+                fact = user_input[7:].strip()
+                from core import save_memory
+                save_memory(fact)
+                print(f"\033[92m[Brain] Memori baru disimpan: {fact}\033[0m\n")
+                continue
+
+            if user_input.startswith('/run '):
+                code = user_input[5:].strip()
+                from core import execute_python
+                res = execute_python(code)
+                print(f'\033[92m[Sandbox] Result: {res}\033[0m\n')
+                continue
+
+            if user_input.lower() == '/sys':
+                import psutil
+                ram = psutil.virtual_memory()
+                print(f"\n\033[95m🖥️ SYSTEM STATUS:")
+                print(f"  RAM Terpakai: {ram.percent}%")
+                print(f"  Hazz Target RAM: < 200MB")
+                print(f"  CPU Load: {psutil.cpu_percent()}%\033[0m\n")
+                continue
+
             if user_input.lower() == '/help':
                 print("\n\033[96m💠 PERINTAH NAVIGASI:")
                 print("  /model [ultra/thinking/search/vision] : Ganti mode AI")
@@ -72,6 +96,9 @@ def main():
                 print("  /personality [text]  : Setel kepribadian custom")
                 print("  /reset               : Reset chat & context")
                 print("  /tools               : Daftar shortcut perintah")
+                print("  /sys                 : Monitor RAM & CPU")
+                print("  /learn [fakta]       : Simpan memori permanen")
+                print("  /run [python]        : Jalankan kode logika")
 
                 print("\n\033[93m💠 STATUS:")
                 print(f"  Current: {current_model} | {current_engine}")
