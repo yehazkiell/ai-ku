@@ -37,11 +37,12 @@ def image_api():
 def agent_api():
     data = request.json
     task = data.get('task')
+    role = data.get('role', 'general')
     if not task:
         return jsonify({"error": "Task is required"}), 400
 
     from core import run_agent_task
-    response = run_agent_task(task)
+    response = run_agent_task(task, role=role)
     return jsonify({"response": response})
 
 @app.route('/status', methods=['GET'])

@@ -69,6 +69,23 @@ def main():
                 continue
 
 
+
+            if user_input.startswith('/arena '):
+                parts = user_input.split(' ', 2)
+                if len(parts) < 3:
+                    print("\033[91mFormat salah. Gunakan: /arena [role] [tugas]\033[0m")
+                    print("Role: researcher, coder, architect, writer, general")
+                    continue
+                role = parts[1].lower()
+                task = parts[2]
+                from core import run_agent_task
+                print(f"\033[95m[Arena] Memanggil Agen {role.upper()}...\033[0m")
+                response = run_agent_task(task, role=role)
+                print(f"\n\033[96m[Arena Result] »\033[0m")
+                print_slow(response)
+                print("\n\033[90m(Hasil lengkap disimpan di agent_workspace.txt)\033[0m\n")
+                continue
+
             if user_input.startswith('/agent '):
                 task = user_input[7:].strip()
                 from core import run_agent_task
@@ -113,6 +130,7 @@ def main():
                 print("  /learn [fakta]       : Simpan memori permanen")
                 print("  /run [python]        : Jalankan kode logika")
                 print("  /agent [tugas]       : Aktifkan AI Agent Mini")
+                print("  /arena [role] [tugas]: Agent khusus (coder/researcher/etc)")
 
                 print("\n\033[93m💠 STATUS:")
                 print(f"  Current: {current_model} | {current_engine}")
