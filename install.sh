@@ -1,5 +1,6 @@
 #!/bin/bash
-echo "🚀 Installing AI-Ku Hazz CLI Edition..."
-pip install requests g4f duckduckgo-search PyPDF2
+echo "🚀 Installing AI-KU PRO Edition dependencies..."
+pip install -r requirements.txt
 echo "✅ Installation complete."
-echo "Run the AI using: python3 hazz.py"
+echo "Run CLI: python3 hazz.py"
+echo "Run API: python3 app.py"

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+memory.json
+memory.lock
+agent_workspace.txt
+.env
