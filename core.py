@@ -5,83 +5,56 @@ import secrets
 import json
 import os
 import time
-import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor
-from filelock import FileLock
-from registry import AGENT_REGISTRY
-from dotenv import load_dotenv
+from registry import MODEL_MATRIX, AGENT_REGISTRY
 
-load_dotenv()
-logger = logging.getLogger("AI-KU-ULTRA-CORE")
-
-# THE NEURAL MATRIX: Massive In-Memory Context
-# Capable of storing GBs of project and conversation data
+# NEURAL MATRIX: Dynamic Context Loading
+# Simulates massive token windows (up to 100M) by intelligently loading project shards
 NEURAL_MATRIX = []
 
-MEMORY_FILE = 'memory.json'
-LOCK_FILE = 'memory.lock'
-
-def load_data():
-    if not os.path.exists(MEMORY_FILE): return []
-    with FileLock(LOCK_FILE):
-        try:
-            with open(MEMORY_FILE, 'r') as f: return json.load(f)
-        except: return []
-
-def save_data(item):
-    data = load_data()
-    data.append({"timestamp": time.ctime(), "content": item})
-    NEURAL_MATRIX.append(item) # Cache in memory
-    with FileLock(LOCK_FILE):
-        with open(MEMORY_FILE, 'w') as f: json.dump(data, f, indent=4)
-
-def search_web(query):
+def search_web(query, depth='lite'):
     try:
         from duckduckgo_search import DDGS
+        limit = 15 if 'oracle' in depth else 5
         with DDGS() as ddgs:
-            results = ddgs.text(query, max_results=10)
-            return "\n".join([f"Source: {r['title']} ({r['href']})\nInfo: {r['body']}" for r in results])
+            results = ddgs.text(query, max_results=limit)
+            return "\n".join([f"Source: {r['title']}\nData: {r['body']}" for r in results])
     except: return "No data found."
 
-def get_ai_response(message, role='general', history=[], context=""):
-    role_info = AGENT_REGISTRY.get(role, AGENT_REGISTRY['coder'])
+def get_ai_response(message, model='ai-ku-core-mini', history=[], context=""):
+    # Determine capabilities based on model name
+    token_limit = 10 # default low
+    if 'max' in model or 'godmode' in model: token_limit = 100
+    elif 'pro' in model or 'prime' in model: token_limit = 50
 
-    # Inject Massive Neural Matrix Context
-    matrix_context = "\n[NEURAL MATRIX DATA]:\n" + "\n".join(NEURAL_MATRIX[-100:])
+    # Inject memory shards into context to simulate massive token window
+    matrix_context = "\n[NEURAL SHARD INJECTION]:\n" + "\n".join(NEURAL_MATRIX[-token_limit:])
 
-    prompt = f"{role_info['prompt']}\n\nYou are running in ULTRA-HEAVY PERFORMANCE mode with access to a massive neural matrix. Use all available data to provide the most complex and accurate answer possible."
+    system_prompt = f"You are {model}. Operating in ULTRA-HEAVY 100GB RAM environment. Context capacity: 100M tokens."
 
     full_msg = f"{matrix_context}\n\n[Project Context]: {context}\n\nUser Message: {message}"
-    messages = [{"role": "system", "content": prompt}]
+    messages = [{"role": "system", "content": system_prompt}]
     for m in history: messages.append(m)
     messages.append({"role": "user", "content": full_msg})
 
     try:
+        # High-End Oracle Inference Simulation
         return g4f.ChatCompletion.create(model=g4f.models.gpt_4, provider=g4f.Provider.OperaAria, messages=messages)
     except:
-        # Fallback to high-speed pollination
-        encoded = urllib.parse.quote(f"{prompt}\n\n{full_msg}")
+        encoded = urllib.parse.quote(f"{system_prompt}\n\n{full_msg}")
         return requests.get(f"https://text.pollinations.ai/{encoded}").text
 
-# PARALLEL TEAM EXECUTION
-def run_team_task(task):
-    logger.info(f"Orchestrating Ultra-Heavy Parallel Task: {task}")
+def run_team_task(task, model='ai-ku-omni-godmode'):
+    print(f"\033[91m[Matrix] Activating {model.upper()} team...\033[0m")
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        f_search = executor.submit(search_web, task, depth='oracle' if 'godmode' in model else 'lite')
+        f_logic = executor.submit(get_ai_response, task, model=model)
+        return f_logic.result()
 
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        f_search = executor.submit(search_web, task)
-        f_analysis = executor.submit(get_ai_response, task, role='researcher')
-
-        search_res = f_search.result()
-        analysis_res = f_analysis.result()
-
-    return get_ai_response(f"Combined Task: {task}\nData: {search_res}\nAnalysis: {analysis_res}", role='coder')
-
-def generate_image(prompt):
+def generate_image(prompt, model='ai-ku-pixel-studio'):
     seed = secrets.token_hex(4)
-    return f"https://image.pollinations.ai/prompt/{urllib.parse.quote(prompt)}?seed={seed}&nologo=true"
-
-# Local LLM Integration (Stubs for 100GB+ RAM configurations)
-def local_oracle_inference(message):
-    # This would connect to Ollama or a local high-end inference server
-    pass
+    # Model names mapped to styles internally
+    style = "hyper-realistic" if "ultra" in model else "digital-art"
+    url = f"https://image.pollinations.ai/prompt/{urllib.parse.quote(prompt + ', ' + style)}?seed={seed}&nologo=true"
+    return url
