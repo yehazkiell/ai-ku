@@ -1,0 +1,16 @@
+{
+  "name": "ai-ku",
+  "version": "3.0.0-ULTRA",
+  "description": "AI-KU Forge & Terminal Edition",
+  "main": "hazz.py",
+  "bin": {
+    "hazz": "hazz.py"
+  },
+  "scripts": {
+    "start": "python3 hazz.py",
+    "server": "python3 app.py"
+  },
+  "dependencies": {
+    "ai-ku": "https://github.com/yehazkiell/ai-ku"
+  }
+}
