@@ -6,3 +6,4 @@ agent_workspace.txt
 memory.json
 memory.lock
 *.log
+.venv/
