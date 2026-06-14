@@ -29,6 +29,30 @@ def main():
             if not prompt: continue
             if prompt.lower() in ['/exit', 'exit']: break
 
+
+            if user_input.startswith('/manus '):
+                task = user_input[7:].strip()
+                from manus.engine import manus_instance
+                print(f"\033[95m[Manus] Mengaktifkan General Purpose Agent...\033[0m")
+                response = manus_instance.execute_general_task(task)
+                print(f"\n\033[96m[Manus Result] »\033[0m")
+                from core import get_ai_response # for print_slow type effect if I had one globally, else just print
+                print(response)
+                print()
+                continue
+
+            if user_input.startswith('/manus-upgrade '):
+                parts = user_input.split(' ')
+                if len(parts) < 3:
+                    print("\033[91mGunakan: /manus-upgrade [skill] [level]\033[0m")
+                    continue
+                skill = parts[1]
+                level = parts[2]
+                from manus.engine import manus_instance
+                msg = manus_instance.upgrade_skill(skill, level)
+                print(f"\033[92m[Manus] {msg}\033[0m\n")
+                continue
+
             if prompt == '/models':
                 for cat, models in MODEL_MATRIX.items():
                     print(f"\n\033[95m{cat}:\033[0m")

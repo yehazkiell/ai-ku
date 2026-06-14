@@ -32,3 +32,8 @@ AI-KU adalah platform AI otonom yang dirancang khusus untuk infrastruktur berat 
 
 ---
 **Peringatan**: AI-KU mengonsumsi RAM besar (Target 100GB+). Gunakan fitur keamanan hanya untuk tujuan pertahanan dan pembelajaran etis.
+
+## 🖐️ Manus AI (General Purpose Agent)
+- **Multi-Step Execution**: Menyelesaikan tugas kompleks secara end-to-end.
+- **Skill Matrix**: Kapabilitas yang dapat diupgrade secara dinamis (Web, Code, Data, Learning).
+- **Hands-on Action**: Fokus pada eksekusi tugas praktis di luar sekadar percakapan.

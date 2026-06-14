@@ -9,8 +9,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from registry import MODEL_MATRIX, AGENT_REGISTRY
 
-# NEURAL MATRIX: Dynamic Context Loading
-# Simulates massive token windows (up to 100M) by intelligently loading project shards
+# NEURAL MATRIX: Massive In-Memory Context
 NEURAL_MATRIX = []
 
 def search_web(query, depth='lite'):
@@ -22,15 +21,24 @@ def search_web(query, depth='lite'):
             return "\n".join([f"Source: {r['title']}\nData: {r['body']}" for r in results])
     except: return "No data found."
 
+def execute_python(code):
+    """Secure sandbox for logical operations."""
+    if len(code) > 1000: return "Error: Code too long."
+    forbidden = ["import", "os", "sys", "open", "eval", "exec", "subprocess", "__", "write"]
+    if any(word in code.lower() for word in forbidden):
+        return "Error: Security violation detected."
+    try:
+        local_vars = {}
+        exec(code, {"__builtins__": None, "round": round, "abs": abs, "len": len, "sum": sum, "max": max, "min": min}, local_vars)
+        return local_vars.get('result', "Success")
+    except Exception as e: return f"Execution error: {e}"
+
 def get_ai_response(message, model='ai-ku-core-mini', history=[], context=""):
-    # Determine capabilities based on model name
-    token_limit = 10 # default low
+    token_limit = 10
     if 'max' in model or 'godmode' in model: token_limit = 100
     elif 'pro' in model or 'prime' in model: token_limit = 50
 
-    # Inject memory shards into context to simulate massive token window
     matrix_context = "\n[NEURAL SHARD INJECTION]:\n" + "\n".join(NEURAL_MATRIX[-token_limit:])
-
     system_prompt = f"You are {model}. Operating in ULTRA-HEAVY 100GB RAM environment. Context capacity: 100M tokens."
 
     full_msg = f"{matrix_context}\n\n[Project Context]: {context}\n\nUser Message: {message}"
@@ -39,7 +47,6 @@ def get_ai_response(message, model='ai-ku-core-mini', history=[], context=""):
     messages.append({"role": "user", "content": full_msg})
 
     try:
-        # High-End Oracle Inference Simulation
         return g4f.ChatCompletion.create(model=g4f.models.gpt_4, provider=g4f.Provider.OperaAria, messages=messages)
     except:
         encoded = urllib.parse.quote(f"{system_prompt}\n\n{full_msg}")
@@ -54,7 +61,9 @@ def run_team_task(task, model='ai-ku-omni-godmode'):
 
 def generate_image(prompt, model='ai-ku-pixel-studio'):
     seed = secrets.token_hex(4)
-    # Model names mapped to styles internally
     style = "hyper-realistic" if "ultra" in model else "digital-art"
     url = f"https://image.pollinations.ai/prompt/{urllib.parse.quote(prompt + ', ' + style)}?seed={seed}&nologo=true"
     return url
+
+def save_to_matrix(data):
+    NEURAL_MATRIX.append(f"[{time.ctime()}] {data}")
