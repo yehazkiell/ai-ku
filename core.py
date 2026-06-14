@@ -1,69 +1,36 @@
-import requests
-import urllib.parse
-import g4f
+from aiku.agents.orchestrator import orchestrator
+from aiku.memory.rag import memory_instance
+from aiku.tools.search import search_web
+from aiku.tools.sandbox import execute_python
 import secrets
-import json
-import os
-import time
+import urllib.parse
 import threading
-from concurrent.futures import ThreadPoolExecutor
-from registry import MODEL_MATRIX, AGENT_REGISTRY
+import time
 
-# NEURAL MATRIX: Massive In-Memory Context
-NEURAL_MATRIX = []
+def get_ai_response(message, role='general', history=[], context=""):
+    full_prompt = f"{context}\\n\\nUser: {message}"
+    return orchestrator.call_llm(full_prompt, role=role, history=history)
 
-def search_web(query, depth='lite'):
-    try:
-        from duckduckgo_search import DDGS
-        limit = 15 if 'oracle' in depth else 5
-        with DDGS() as ddgs:
-            results = ddgs.text(query, max_results=limit)
-            return "\n".join([f"Source: {r['title']}\nData: {r['body']}" for r in results])
-    except: return "No data found."
+def run_team_task(task):
+    return orchestrator.run_multi_agent_task(task)
 
-def execute_python(code):
-    """Secure sandbox for logical operations."""
-    if len(code) > 1000: return "Error: Code too long."
-    forbidden = ["import", "os", "sys", "open", "eval", "exec", "subprocess", "__", "write"]
-    if any(word in code.lower() for word in forbidden):
-        return "Error: Security violation detected."
-    try:
-        local_vars = {}
-        exec(code, {"__builtins__": None, "round": round, "abs": abs, "len": len, "sum": sum, "max": max, "min": min}, local_vars)
-        return local_vars.get('result', "Success")
-    except Exception as e: return f"Execution error: {e}"
+def save_data(item):
+    memory_instance.add_memory(item)
 
-def get_ai_response(message, model='ai-ku-core-mini', history=[], context=""):
-    token_limit = 10
-    if 'max' in model or 'godmode' in model: token_limit = 100
-    elif 'pro' in model or 'prime' in model: token_limit = 50
-
-    matrix_context = "\n[NEURAL SHARD INJECTION]:\n" + "\n".join(NEURAL_MATRIX[-token_limit:])
-    system_prompt = f"You are {model}. Operating in ULTRA-HEAVY 100GB RAM environment. Context capacity: 100M tokens."
-
-    full_msg = f"{matrix_context}\n\n[Project Context]: {context}\n\nUser Message: {message}"
-    messages = [{"role": "system", "content": system_prompt}]
-    for m in history: messages.append(m)
-    messages.append({"role": "user", "content": full_msg})
-
-    try:
-        return g4f.ChatCompletion.create(model=g4f.models.gpt_4, provider=g4f.Provider.OperaAria, messages=messages)
-    except:
-        encoded = urllib.parse.quote(f"{system_prompt}\n\n{full_msg}")
-        return requests.get(f"https://text.pollinations.ai/{encoded}").text
-
-def run_team_task(task, model='ai-ku-omni-godmode'):
-    print(f"\033[91m[Matrix] Activating {model.upper()} team...\033[0m")
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        f_search = executor.submit(search_web, task, depth='oracle' if 'godmode' in model else 'lite')
-        f_logic = executor.submit(get_ai_response, task, model=model)
-        return f_logic.result()
-
-def generate_image(prompt, model='ai-ku-pixel-studio'):
+def generate_image(prompt):
     seed = secrets.token_hex(4)
-    style = "hyper-realistic" if "ultra" in model else "digital-art"
-    url = f"https://image.pollinations.ai/prompt/{urllib.parse.quote(prompt + ', ' + style)}?seed={seed}&nologo=true"
-    return url
+    return f"https://image.pollinations.ai/prompt/{urllib.parse.quote(prompt)}?seed={seed}&nologo=true"
 
-def save_to_matrix(data):
-    NEURAL_MATRIX.append(f"[{time.ctime()}] {data}")
+def start_scout_mode():
+    def scout_loop():
+        while True:
+            # Smart browsing
+            info = search_web("Lates AI breakthroughs and Open Source models")
+            memory_instance.add_memory(f"Autonomous knowledge update: {info[:500]}", metadata={"source": "scout"})
+            time.sleep(7200) # Every 2 hours
+    threading.Thread(target=scout_loop, daemon=True).start()
+
+def get_clarifying_questions(task):
+    prompt = f"TASK: '{task}'. Generate 5 critical clarifying questions to ensure perfect execution."
+    res = get_ai_response(prompt, role="analyst")
+    return [q.strip() for q in res.split('\\n') if q.strip()]

@@ -3,7 +3,7 @@ import sys
 import os
 import time
 from core import get_ai_response, run_team_task, generate_image
-from registry import MODEL_MATRIX
+from aiku.agents.registry import MODEL_MATRIX
 
 def clear(): os.system('cls' if os.name == 'nt' else 'clear')
 
