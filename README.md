@@ -91,7 +91,11 @@ cp .env.example .env
 | `OPENROUTER_API_KEY` | _(kosong)_ | Tidak | Kunci OpenRouter. Jika diisi, dipakai lebih dulu. |
 | `GROQ_API_KEY` | _(kosong)_ | Tidak | Kunci Groq. |
 | `OPENAI_API_KEY` | _(kosong)_ | Tidak | Kunci OpenAI. |
-| `AIKU_LLM_PROVIDER` | `auto` | Tidak | `auto` / `openrouter` / `groq` / `openai` / `g4f`. |
+| `AIKU_LLM_PROVIDER` | `auto` | Tidak | `auto` / `local` / `ollama` / `openrouter` / `groq` / `openai` / `g4f`. `local`/`ollama` = lokal saja (tanpa fallback cloud). |
+| `AIKU_USE_LOCAL` | `false` | Tidak | Aktifkan model lokal (didahulukan saat mode `auto`). |
+| `AIKU_LOCAL_BASE_URL` | `http://localhost:11434/v1` | Tidak | Endpoint OpenAI-compatible lokal (Ollama/LocalAI/LM Studio/vLLM/jan/llama.cpp). |
+| `AIKU_LOCAL_MODEL` | `llama3.2` | Tidak | Nama model lokal yang dipakai. |
+| `AIKU_LOCAL_API_KEY` | _(kosong)_ | Tidak | Biasanya tak perlu; isi jika server lokal Anda mewajibkan key. |
 | `AIKU_LLM_MODEL` | _(kosong)_ | Tidak | Kosongkan agar memakai model default tiap provider (mis. `llama-3.3-70b-versatile` untuk Groq). Isi untuk menimpa secara global. |
 | `AIKU_REQUEST_TIMEOUT` | `60` | Tidak | Timeout (detik) panggilan LLM. |
 | `AIKU_MAX_ITERATIONS` | `6` | Tidak | Maksimum iterasi loop agen otonom. |
@@ -108,6 +112,21 @@ cp .env.example .env
 
 > **Tanpa kunci provider apa pun**, AI-KU otomatis memakai provider gratis (g4f).
 > Untuk stabilitas terbaik, isi minimal salah satu dari `OPENROUTER`/`GROQ`/`OPENAI`.
+
+### Pakai model sendiri (lokal, tanpa API key)
+AI-KU bisa memakai model lokal Anda lewat endpoint OpenAI-compatible — Ollama,
+LocalAI, LM Studio, vLLM, jan, atau llama.cpp server. Tidak perlu API key dan
+data tidak keluar dari mesin Anda. Contoh dengan [Ollama](https://ollama.com):
+```bash
+ollama pull llama3.2            # unduh model sekali
+# di .env:
+#   AIKU_LLM_PROVIDER=local     (lokal saja, tanpa fallback cloud)
+#   AIKU_LOCAL_MODEL=llama3.2
+#   AIKU_LOCAL_BASE_URL=http://localhost:11434/v1
+```
+Atau set `AIKU_USE_LOCAL=true` (mode `auto`) agar model lokal dicoba lebih dulu
+sebelum provider lain. Semua channel (CLI, Web, Telegram, WhatsApp) otomatis
+ikut memakai model lokal ini.
 
 Cek konfigurasi aktif (nilai rahasia otomatis disamarkan):
 ```bash
