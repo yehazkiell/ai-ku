@@ -51,6 +51,32 @@ class TestLLMRouter(unittest.TestCase):
             llm.chat([{"role": "user", "content": "hi"}])
             self.assertEqual(post.call_args.kwargs["json"]["model"], "custom-model")
 
+    def test_provider_order_forced_local_is_local_only(self):
+        # Forcing a local model must never fall back to a cloud/free provider.
+        s = Settings(llm_provider="local")
+        with mock.patch.object(llm, "settings", s):
+            self.assertEqual(llm._provider_order(), ["local"])
+        s2 = Settings(llm_provider="ollama")
+        with mock.patch.object(llm, "settings", s2):
+            self.assertEqual(llm._provider_order(), ["local"])
+
+    def test_provider_order_auto_with_local_enabled(self):
+        s = Settings(llm_provider="auto", use_local=True, groq_api_key="gk")
+        with mock.patch.object(llm, "settings", s):
+            self.assertEqual(llm._provider_order(), ["local", "groq", "g4f"])
+
+    def test_chat_uses_local_without_api_key(self):
+        s = Settings(llm_provider="local", local_model="llama3.2",
+                     local_base_url="http://localhost:11434/v1")
+        with mock.patch.object(llm, "settings", s), \
+             mock.patch.object(llm.requests, "post", return_value=FakeResponse("local answer")) as post:
+            out = llm.chat([{"role": "user", "content": "hi"}])
+            self.assertEqual(out, "local answer")
+            self.assertEqual(post.call_args.kwargs["json"]["model"], "llama3.2")
+            self.assertEqual(post.call_args.args[0], "http://localhost:11434/v1/chat/completions")
+            # No Authorization header when no local key is set.
+            self.assertNotIn("Authorization", post.call_args.kwargs["headers"])
+
     def test_chat_falls_back_to_g4f(self):
         s = Settings(llm_provider="g4f")
         with mock.patch.object(llm, "settings", s), \

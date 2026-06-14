@@ -53,6 +53,15 @@ class Settings:
     groq_api_key: str = field(default_factory=lambda: os.getenv("GROQ_API_KEY", ""))
     openai_api_key: str = field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
 
+    # Local / self-hosted model — any OpenAI-compatible /v1 endpoint
+    # (Ollama, LocalAI, LM Studio, vLLM, jan, llama.cpp server...).
+    # No API key needed for most local servers, so this is the "own model,
+    # no API key" path. Default points at Ollama's OpenAI-compatible endpoint.
+    local_base_url: str = field(default_factory=lambda: os.getenv("AIKU_LOCAL_BASE_URL", "http://localhost:11434/v1"))
+    local_model: str = field(default_factory=lambda: os.getenv("AIKU_LOCAL_MODEL", "llama3.2"))
+    local_api_key: str = field(default_factory=lambda: os.getenv("AIKU_LOCAL_API_KEY", ""))
+    use_local: bool = field(default_factory=lambda: _get_bool("AIKU_USE_LOCAL", False))
+
     # Provider routing / model selection
     llm_provider: str = field(default_factory=lambda: os.getenv("AIKU_LLM_PROVIDER", "auto"))
     # Empty by default so each provider's own default model is used (see aiku/llm.py).
@@ -71,6 +80,13 @@ class Settings:
     host: str = field(default_factory=lambda: os.getenv("AIKU_HOST", "0.0.0.0"))
     port: int = field(default_factory=lambda: _get_int("AIKU_PORT", 5000))
 
+    # Messaging channels (all optional)
+    telegram_bot_token: str = field(default_factory=lambda: os.getenv("TELEGRAM_BOT_TOKEN", ""))
+    twilio_auth_token: str = field(default_factory=lambda: os.getenv("TWILIO_AUTH_TOKEN", ""))
+    whatsapp_token: str = field(default_factory=lambda: os.getenv("WHATSAPP_TOKEN", ""))
+    whatsapp_phone_number_id: str = field(default_factory=lambda: os.getenv("WHATSAPP_PHONE_NUMBER_ID", ""))
+    whatsapp_verify_token: str = field(default_factory=lambda: os.getenv("WHATSAPP_VERIFY_TOKEN", "aiku-verify"))
+
     @property
     def is_production(self) -> bool:
         return self.env.lower() in ("prod", "production")
@@ -86,6 +102,17 @@ class Settings:
             providers.append("openai")
         return providers
 
+    def enabled_channels(self) -> List[str]:
+        """Names of messaging channels that have the needed credentials set."""
+        channels = ["web"]  # web chat only needs the API key, always available
+        if self.telegram_bot_token:
+            channels.append("telegram")
+        if self.whatsapp_token and self.whatsapp_phone_number_id:
+            channels.append("whatsapp_cloud")
+        # Twilio replies via TwiML and needs no outbound token, so it's always reachable.
+        channels.append("whatsapp_twilio")
+        return channels
+
     def validate(self) -> List[str]:
         """Return a list of human-readable configuration warnings."""
         warnings: List[str] = []
@@ -94,10 +121,11 @@ class Settings:
                 "AIKU_API_KEY is still the default value in production. "
                 "Set a strong AIKU_API_KEY before exposing the API."
             )
-        if not self.configured_providers():
+        if not self.configured_providers() and not self.use_local:
             warnings.append(
-                "No remote LLM provider key set (OPENROUTER/GROQ/OPENAI). "
-                "Falling back to free g4f providers, which may be less stable."
+                "No remote LLM provider key set (OPENROUTER/GROQ/OPENAI) and "
+                "AIKU_USE_LOCAL is off. Falling back to free g4f providers, "
+                "which may be less stable."
             )
         if self.max_iterations < 1:
             warnings.append("AIKU_MAX_ITERATIONS must be >= 1; clamping to 1.")
@@ -116,6 +144,10 @@ class Settings:
             f"memory_path        = {self.memory_path}",
             f"memory_top_k       = {self.memory_top_k}",
             f"remote_providers   = {', '.join(self.configured_providers()) or 'none (g4f fallback)'}",
+            f"local_model        = {self.local_model} @ {self.local_base_url}" + (" (enabled)" if self.use_local else ""),
+            f"channels           = {', '.join(self.enabled_channels())}",
+            f"telegram_bot_token = {mask_secret(self.telegram_bot_token)}",
+            f"whatsapp_token     = {mask_secret(self.whatsapp_token)}",
             f"openrouter_api_key = {mask_secret(self.openrouter_api_key)}",
             f"groq_api_key       = {mask_secret(self.groq_api_key)}",
             f"openai_api_key     = {mask_secret(self.openai_api_key)}",

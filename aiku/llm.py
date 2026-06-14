@@ -2,7 +2,12 @@
 
 Picks an inference backend based on configuration and falls back gracefully:
 
-    OpenRouter -> Groq -> OpenAI -> g4f (free)
+    [local] -> OpenRouter -> Groq -> OpenAI -> g4f (free)
+
+``local`` is any OpenAI-compatible /v1 endpoint (Ollama, LocalAI, LM Studio,
+vLLM, jan, llama.cpp server...) — the "own model, no API key" path. It only
+joins the chain when forced (``AIKU_LLM_PROVIDER=local``/``ollama``) or enabled
+(``AIKU_USE_LOCAL=true``); a forced local run never falls back to the cloud.
 
 Every provider speaks the OpenAI chat-completions message format, so callers
 only ever deal with ``[{"role": ..., "content": ...}]`` lists.
@@ -48,6 +53,18 @@ def _call_openai_compatible(provider: str, messages: List[Dict], model: Optional
     return data["choices"][0]["message"]["content"]
 
 
+def _call_local(messages: List[Dict], model: Optional[str]) -> str:
+    """Call a local/self-hosted OpenAI-compatible server (no key required)."""
+    url = settings.local_base_url.rstrip("/") + "/chat/completions"
+    payload = {"model": model or settings.local_model, "messages": messages}
+    headers = {"Content-Type": "application/json"}
+    if settings.local_api_key:
+        headers["Authorization"] = f"Bearer {settings.local_api_key}"
+    resp = requests.post(url, json=payload, headers=headers, timeout=settings.request_timeout)
+    resp.raise_for_status()
+    return resp.json()["choices"][0]["message"]["content"]
+
+
 def _call_g4f(messages: List[Dict]) -> str:
     """Free fallback using g4f, importing defensively at call time."""
     import g4f  # imported lazily so the package is optional
@@ -81,12 +98,16 @@ def _call_g4f(messages: List[Dict]) -> str:
 def _provider_order() -> List[str]:
     """Decide which providers to try and in what order."""
     forced = settings.llm_provider.lower()
+    if forced in ("local", "ollama"):
+        # Honour local-only intent: never leak prompts to a cloud fallback.
+        return ["local"]
     if forced in _OPENAI_COMPATIBLE:
         return [forced, "g4f"]
     if forced == "g4f":
         return ["g4f"]
-    # auto: configured remote providers first, then free fallback
-    return settings.configured_providers() + ["g4f"]
+    # auto: optional local first, then configured remotes, then free fallback
+    order = ["local"] if settings.use_local else []
+    return order + settings.configured_providers() + ["g4f"]
 
 
 def chat(messages: List[Dict], model: Optional[str] = None) -> str:
@@ -96,6 +117,8 @@ def chat(messages: List[Dict], model: Optional[str] = None) -> str:
         try:
             if provider == "g4f":
                 return _call_g4f(messages)
+            if provider == "local":
+                return _call_local(messages, model)
             return _call_openai_compatible(provider, messages, model)
         except Exception as exc:
             errors.append(f"{provider}: {exc}")
