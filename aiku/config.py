@@ -55,7 +55,8 @@ class Settings:
 
     # Provider routing / model selection
     llm_provider: str = field(default_factory=lambda: os.getenv("AIKU_LLM_PROVIDER", "auto"))
-    llm_model: str = field(default_factory=lambda: os.getenv("AIKU_LLM_MODEL", "gpt-4o-mini"))
+    # Empty by default so each provider's own default model is used (see aiku/llm.py).
+    llm_model: str = field(default_factory=lambda: os.getenv("AIKU_LLM_MODEL", ""))
     request_timeout: int = field(default_factory=lambda: _get_int("AIKU_REQUEST_TIMEOUT", 60))
 
     # Agent behaviour
@@ -109,7 +110,7 @@ class Settings:
             f"env                = {self.env}",
             f"api_key            = {mask_secret(self.api_key)}",
             f"llm_provider       = {self.llm_provider}",
-            f"llm_model          = {self.llm_model}",
+            f"llm_model          = {self.llm_model or '(provider default)'}",
             f"max_iterations     = {self.max_iterations}",
             f"reflection         = {self.enable_reflection}",
             f"memory_path        = {self.memory_path}",

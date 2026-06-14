@@ -35,6 +35,22 @@ class TestLLMRouter(unittest.TestCase):
             self.assertEqual(out, "hi there")
             post.assert_called_once()
 
+    def test_provider_default_model_used_when_unset(self):
+        # Regression: empty AIKU_LLM_MODEL must fall through to the provider default.
+        s = Settings(llm_provider="groq", groq_api_key="gk", llm_model="")
+        with mock.patch.object(llm, "settings", s), \
+             mock.patch.object(llm.requests, "post", return_value=FakeResponse("ok")) as post:
+            llm.chat([{"role": "user", "content": "hi"}])
+            sent_model = post.call_args.kwargs["json"]["model"]
+            self.assertEqual(sent_model, "llama-3.3-70b-versatile")
+
+    def test_explicit_model_overrides_provider_default(self):
+        s = Settings(llm_provider="groq", groq_api_key="gk", llm_model="custom-model")
+        with mock.patch.object(llm, "settings", s), \
+             mock.patch.object(llm.requests, "post", return_value=FakeResponse("ok")) as post:
+            llm.chat([{"role": "user", "content": "hi"}])
+            self.assertEqual(post.call_args.kwargs["json"]["model"], "custom-model")
+
     def test_chat_falls_back_to_g4f(self):
         s = Settings(llm_provider="g4f")
         with mock.patch.object(llm, "settings", s), \
