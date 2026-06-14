@@ -92,7 +92,7 @@ cp .env.example .env
 | `GROQ_API_KEY` | _(kosong)_ | Tidak | Kunci Groq. |
 | `OPENAI_API_KEY` | _(kosong)_ | Tidak | Kunci OpenAI. |
 | `AIKU_LLM_PROVIDER` | `auto` | Tidak | `auto` / `openrouter` / `groq` / `openai` / `g4f`. |
-| `AIKU_LLM_MODEL` | `gpt-4o-mini` | Tidak | Nama model yang dikirim ke provider. |
+| `AIKU_LLM_MODEL` | _(kosong)_ | Tidak | Kosongkan agar memakai model default tiap provider (mis. `llama-3.3-70b-versatile` untuk Groq). Isi untuk menimpa secara global. |
 | `AIKU_REQUEST_TIMEOUT` | `60` | Tidak | Timeout (detik) panggilan LLM. |
 | `AIKU_MAX_ITERATIONS` | `6` | Tidak | Maksimum iterasi loop agen otonom. |
 | `AIKU_ENABLE_REFLECTION` | `true` | Tidak | Aktifkan langkah self-critique. |
@@ -100,6 +100,11 @@ cp .env.example .env
 | `AIKU_MEMORY_TOP_K` | `4` | Tidak | Jumlah memori relevan yang ditarik. |
 | `AIKU_HOST` | `0.0.0.0` | Tidak | Host server API. |
 | `AIKU_PORT` | `5000` | Tidak | Port server API. |
+| `TELEGRAM_BOT_TOKEN` | _(kosong)_ | Tidak | Token bot dari @BotFather (untuk channel Telegram). |
+| `TWILIO_AUTH_TOKEN` | _(kosong)_ | Tidak | Auth token Twilio (opsional, untuk validasi tanda tangan webhook). |
+| `WHATSAPP_TOKEN` | _(kosong)_ | Tidak | Access token Meta WhatsApp Cloud API. |
+| `WHATSAPP_PHONE_NUMBER_ID` | _(kosong)_ | Tidak | Phone Number ID dari Meta WhatsApp Cloud API. |
+| `WHATSAPP_VERIFY_TOKEN` | `aiku-verify` | Tidak | Token verifikasi webhook Meta (Anda yang tentukan). |
 
 > **Tanpa kunci provider apa pun**, AI-KU otomatis memakai provider gratis (g4f).
 > Untuk stabilitas terbaik, isi minimal salah satu dari `OPENROUTER`/`GROQ`/`OPENAI`.
@@ -149,6 +154,7 @@ Semua endpoint (kecuali `/health` dan `/metrics`) memerlukan header
 
 | Method | Endpoint | Deskripsi |
 |---|---|---|
+| `GET` | `/` | Web Chat UI bawaan |
 | `GET` | `/health` | Status & kapabilitas |
 | `GET` | `/metrics` | Info konfigurasi runtime |
 | `POST` | `/api/v1/chat` | Chat RAG-augmented |
@@ -188,6 +194,52 @@ curl -X POST http://localhost:5000/api/v1/memory \
 
 curl "http://localhost:5000/api/v1/memory?q=Flask" -H "X-API-KEY: aiku_master_key_123"
 ```
+
+---
+
+## 💬 Channel Chat (Telegram, WhatsApp, Web)
+
+AI-KU bisa diakses lewat beberapa channel. Semuanya memakai router LLM yang sama
+dan menyimpan riwayat singkat per-percakapan. Lihat channel aktif via `/health`
+atau `/metrics` (field `channels`).
+
+### 1. Web Chat UI (paling cepat, tanpa kredensial tambahan)
+Jalankan server lalu buka di browser:
+```bash
+python3 app.py
+# buka http://localhost:5000/
+```
+Masukkan `X-API-KEY` Anda di kolom kanan atas (disimpan di browser), lalu mulai chat.
+
+### 2. Telegram
+1. Buat bot lewat [@BotFather](https://t.me/BotFather) → salin token.
+2. Set `TELEGRAM_BOT_TOKEN` di `.env`.
+3. Jalankan bot (long-polling, tidak perlu URL publik):
+```bash
+python3 -m aiku.channels.telegram_bot
+```
+4. Kirim pesan ke bot Anda. Perintah: `/start`, `/reset`.
+
+### 3. WhatsApp via Twilio
+1. Aktifkan [Twilio WhatsApp Sandbox](https://www.twilio.com/docs/whatsapp/sandbox).
+2. Buat server bisa diakses publik (mis. `ngrok http 5000`).
+3. Di konsol Twilio, set **"When a message comes in"** ke:
+   `https://<domain-publik-anda>/webhook/twilio` (HTTP POST).
+4. Kirim pesan ke nomor sandbox — AI-KU membalas via TwiML (tanpa kredensial keluar).
+   Set `TWILIO_AUTH_TOKEN` hanya jika ingin memvalidasi tanda tangan request.
+
+### 4. WhatsApp via Meta Cloud API (resmi)
+1. Buat app di [Meta for Developers](https://developers.facebook.com/) → tambah produk **WhatsApp**.
+2. Salin **Access Token** → `WHATSAPP_TOKEN`, dan **Phone Number ID** → `WHATSAPP_PHONE_NUMBER_ID`.
+3. Tentukan `WHATSAPP_VERIFY_TOKEN` (bebas), lalu di konfigurasi webhook Meta:
+   - Callback URL: `https://<domain-publik-anda>/webhook/whatsapp`
+   - Verify token: nilai yang sama dengan `WHATSAPP_VERIFY_TOKEN`
+   - Subscribe ke field **messages**.
+4. Meta akan memanggil `GET /webhook/whatsapp` untuk verifikasi; pesan masuk lewat
+   `POST` dan dibalas via Graph API.
+
+> Untuk Twilio & Meta, server harus dapat diakses dari internet (gunakan ngrok,
+> Cloudflare Tunnel, atau hosting). Telegram & Web UI tidak memerlukannya.
 
 ---
 

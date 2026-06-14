@@ -71,6 +71,13 @@ class Settings:
     host: str = field(default_factory=lambda: os.getenv("AIKU_HOST", "0.0.0.0"))
     port: int = field(default_factory=lambda: _get_int("AIKU_PORT", 5000))
 
+    # Messaging channels (all optional)
+    telegram_bot_token: str = field(default_factory=lambda: os.getenv("TELEGRAM_BOT_TOKEN", ""))
+    twilio_auth_token: str = field(default_factory=lambda: os.getenv("TWILIO_AUTH_TOKEN", ""))
+    whatsapp_token: str = field(default_factory=lambda: os.getenv("WHATSAPP_TOKEN", ""))
+    whatsapp_phone_number_id: str = field(default_factory=lambda: os.getenv("WHATSAPP_PHONE_NUMBER_ID", ""))
+    whatsapp_verify_token: str = field(default_factory=lambda: os.getenv("WHATSAPP_VERIFY_TOKEN", "aiku-verify"))
+
     @property
     def is_production(self) -> bool:
         return self.env.lower() in ("prod", "production")
@@ -85,6 +92,17 @@ class Settings:
         if self.openai_api_key:
             providers.append("openai")
         return providers
+
+    def enabled_channels(self) -> List[str]:
+        """Names of messaging channels that have the needed credentials set."""
+        channels = ["web"]  # web chat only needs the API key, always available
+        if self.telegram_bot_token:
+            channels.append("telegram")
+        if self.whatsapp_token and self.whatsapp_phone_number_id:
+            channels.append("whatsapp_cloud")
+        # Twilio replies via TwiML and needs no outbound token, so it's always reachable.
+        channels.append("whatsapp_twilio")
+        return channels
 
     def validate(self) -> List[str]:
         """Return a list of human-readable configuration warnings."""
@@ -116,6 +134,9 @@ class Settings:
             f"memory_path        = {self.memory_path}",
             f"memory_top_k       = {self.memory_top_k}",
             f"remote_providers   = {', '.join(self.configured_providers()) or 'none (g4f fallback)'}",
+            f"channels           = {', '.join(self.enabled_channels())}",
+            f"telegram_bot_token = {mask_secret(self.telegram_bot_token)}",
+            f"whatsapp_token     = {mask_secret(self.whatsapp_token)}",
             f"openrouter_api_key = {mask_secret(self.openrouter_api_key)}",
             f"groq_api_key       = {mask_secret(self.groq_api_key)}",
             f"openai_api_key     = {mask_secret(self.openai_api_key)}",
