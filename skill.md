@@ -28,7 +28,7 @@ AI-KU adalah platform AI otonom yang dirancang khusus untuk infrastruktur berat 
 
 ## 🔱 Omni Godmode (Hybrid Models)
 - **ai-ku-omni-basic**: Gabungan search, image, & code.
-- **ai-ku-omni-godmode**: Kapasitas 100M+ Token. Memori tanpa batas & kemampuan otonom.
+- **ai-ku-omni-godmode**: Kapasitas RAG-Augmented (Effective Infinite Context). Memori tanpa batas & kemampuan otonom.
 
 ---
 **Peringatan**: AI-KU mengonsumsi RAM besar (Target 100GB+). Gunakan fitur keamanan hanya untuk tujuan pertahanan dan pembelajaran etis.

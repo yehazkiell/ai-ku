@@ -1,4 +1,4 @@
-name: AI-KU CI
+name: AI-KU Production CI
 
 on: [push, pull_request]
 
@@ -13,5 +13,5 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Run sanity check
-        run: python3 -c "import core; import app; import hazz; print('System Integrity OK')"
+      - name: Run Unit Tests
+        run: python3 -m unittest discover tests

@@ -25,3 +25,13 @@ def list_project_files(startpath='.'):
         for f in files:
             file_list.append(os.path.join(root, f))
     return file_list
+
+def list_project_files(path='.'):
+    """Secure file listing."""
+    files = []
+    for root, _, filenames in os.walk(path):
+        if 'chroma_db' in root or '.git' in root or '__pycache__' in root:
+            continue
+        for f in filenames:
+            files.append(os.path.join(root, f))
+    return files[:50] # Hard limit for context safety

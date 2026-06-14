@@ -1,6 +1,8 @@
 __pycache__/
 *.pyc
+.env
+chroma_db/
+agent_workspace.txt
 memory.json
 memory.lock
-agent_workspace.txt
-.env
+*.log

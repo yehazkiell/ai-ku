@@ -26,7 +26,7 @@ MODEL_MATRIX = {
         "ai-ku-omni-basic": {"tokens": "5M", "desc": "All-in-one entry level."},
         "ai-ku-omni-advanced": {"tokens": "25M", "desc": "Pro-grade multi-tasking."},
         "ai-ku-omni-prime": {"tokens": "50M", "desc": "Enterprise orchestrator."},
-        "ai-ku-omni-godmode": {"tokens": "100M+", "desc": "Infinite context & zero-shot mastery."}
+        "ai-ku-omni-godmode": {"tokens": "RAG-Driven", "desc": "Infinite context & zero-shot mastery."}
     }
 }
 
