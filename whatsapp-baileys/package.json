@@ -1,0 +1,16 @@
+{
+  "name": "aiku-whatsapp-baileys",
+  "version": "1.0.0",
+  "description": "WhatsApp bridge for AI-KU using Baileys (QR login, no API key, no Twilio/Meta).",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.9",
+    "dotenv": "^16.3.1",
+    "pino": "^9.5.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}

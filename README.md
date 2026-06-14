@@ -220,7 +220,19 @@ python3 -m aiku.channels.telegram_bot
 ```
 4. Kirim pesan ke bot Anda. Perintah: `/start`, `/reset`.
 
-### 3. WhatsApp via Twilio
+### 3. WhatsApp via Baileys (disarankan — tanpa API key)
+Login lewat QR (WhatsApp → Linked devices), tanpa Twilio/Meta dan tanpa URL publik.
+Bridge Node ini meneruskan pesan ke REST API AI-KU.
+```bash
+python3 app.py            # 1) jalankan server AI-KU
+cd whatsapp-baileys
+cp .env.example .env      # 2) sesuaikan AIKU_API_URL / AIKU_API_KEY bila perlu
+npm install && npm start  # 3) scan QR yang muncul
+```
+Chat pribadi dibalas semua; di grup hanya pesan berawalan `.ai` (lihat
+[`whatsapp-baileys/README.md`](whatsapp-baileys/README.md)).
+
+### 4. WhatsApp via Twilio
 1. Aktifkan [Twilio WhatsApp Sandbox](https://www.twilio.com/docs/whatsapp/sandbox).
 2. Buat server bisa diakses publik (mis. `ngrok http 5000`).
 3. Di konsol Twilio, set **"When a message comes in"** ke:
@@ -228,7 +240,7 @@ python3 -m aiku.channels.telegram_bot
 4. Kirim pesan ke nomor sandbox — AI-KU membalas via TwiML (tanpa kredensial keluar).
    Set `TWILIO_AUTH_TOKEN` hanya jika ingin memvalidasi tanda tangan request.
 
-### 4. WhatsApp via Meta Cloud API (resmi)
+### 5. WhatsApp via Meta Cloud API (resmi)
 1. Buat app di [Meta for Developers](https://developers.facebook.com/) → tambah produk **WhatsApp**.
 2. Salin **Access Token** → `WHATSAPP_TOKEN`, dan **Phone Number ID** → `WHATSAPP_PHONE_NUMBER_ID`.
 3. Tentukan `WHATSAPP_VERIFY_TOKEN` (bebas), lalu di konfigurasi webhook Meta:
