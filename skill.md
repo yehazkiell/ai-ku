@@ -37,3 +37,10 @@ AI-KU adalah platform AI otonom yang dirancang khusus untuk infrastruktur berat 
 - **Multi-Step Execution**: Menyelesaikan tugas kompleks secara end-to-end.
 - **Skill Matrix**: Kapabilitas yang dapat diupgrade secara dinamis (Web, Code, Data, Learning).
 - **Hands-on Action**: Fokus pada eksekusi tugas praktis di luar sekadar percakapan.
+
+## 🤖 Autonomous Engineering (v4.5)
+- **Autonomous Loop**: Implementasi siklus Search -> Analyze -> Plan -> Execute -> Verify.
+- **Terminal Integration**: Eksekusi perintah shell secara aman untuk otomasi tugas.
+- **Browser Automation**: Penjelajahan web tingkat lanjut dan ekstraksi konten (Stagehand style).
+- **Git Awareness**: Kemampuan mengelola dan menginspeksi repositori kode.
+- **Rule-Based Reasoning**: Mematuhi 10 aturan emas agen otonom profesional.

@@ -1,44 +1,24 @@
-# AI-KU (INTELLIGENT EDITION v4.0) 🚀
+# AI-KU (AUTONOMOUS AGENT EDITION v4.5) 🤖
 
-Platform AI serbaguna yang ditenagai oleh **Real RAG (Retrieval-Augmented Generation)** dan **Multi-Agent Orchestration**. Dioptimalkan untuk performa tinggi, keamanan, dan persistensi data.
+AI-KU adalah agen otonom profesional dengan akses ke Terminal, Browser, Sistem File, Git, dan Pencarian Web. Dirancang untuk bekerja seperti Software Engineer dan Peneliti tingkat lanjut.
 
-## ✨ Fitur Utama
-- **Real Vector Memory**: Menggunakan ChromaDB dan Sentence-Transformers untuk ingatan jangka panjang yang akurat dan persisten.
-- **Autonomous Multi-Agent Loop**: Kolaborasi antara Researcher, Analyst, dan Lead Lead untuk menyelesaikan tugas kompleks.
-- **True RAG Integration**: Setiap respon diperkaya dengan data lokal (Memori) dan data global (Web Search).
-- **Professional API**: Validasi skema (Pydantic), Rate Limiting, dan Error Handling terstruktur.
-- **Hazz Sandbox**: Eksekusi logika Python aman dalam lingkungan terisolasi.
+## 📜 10 Aturan Emas AI-KU
+1. Selalu berpikir langkah-demi-langkah.
+2. Gunakan pencarian web (SearXNG/DDG) sebelum membuat asumsi.
+3. Gunakan Browser jika hasil pencarian kurang memadai.
+4. Inspeksi codebase sebelum melakukan perubahan kode.
+5. Gunakan perintah terminal yang aman.
+6. Alur kerja: Search → Analyze → Plan → Execute → Verify → Report.
+7. Pilih solusi paling handal jika ada banyak opsi.
+8. Berikan update progres secara berkala.
+9. Nyatakan ketidakpastian secara jelas jika data tidak terverifikasi.
+10. Bertindak profesional, akurat, efisien, dan aman.
 
-## 🚀 Instalasi
-
-### Prasyarat
-- Python 3.12+
-- RAM 8GB+ (Disarankan 16GB+ untuk performa maksimal RAG lokal)
-
-### Setup Cepat
-```bash
-./install.sh
-python3 app.py # Jalankan API Professional
-python3 hazz.py # Jalankan CLI Advanced
-```
-
-## 🔌 Dokumentasi API (REST)
-
-**Endpoint**: `POST /api/v1/chat`
-**Header**: `X-API-KEY: your_key`
-
-**Body**:
-```json
-{
-  "message": "Apa itu RAG?",
-  "role": "researcher"
-}
-```
-
-## 🛠️ CLI Power Commands
-- `/ls`      : Lihat struktur proyek.
-- `/learn`   : Ajarkan AI fakta baru (disimpan ke Vector DB).
-- `/models`  : Daftar model Godmode tersedia.
+## 🚀 Fitur Utama
+- **Autonomous Multi-Tool Logic**: Secara cerdas memilih antara Terminal, Browser, atau Search.
+- **Project Forge**: Kemampuan mengelola repository Git dan file proyek secara otonom.
+- **RAG Persistence**: Memori vektor persisten menggunakan ChromaDB.
+- **Professional API**: Integrasi bot yang kuat dengan validasi Pydantic.
 
 ## 📦 Lisensi
-MIT - 2024 AI-Ku Professional Team
+MIT - 2024 AI-Ku Autonomous Team
