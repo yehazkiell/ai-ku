@@ -1,6 +1,11 @@
-# 🌌 AI-KU GODMODE SKILLSET (VERSION 3.0)
+# 🌌 AI-KU GODMODE SKILLSET (VERSION 3.2 - SHIELD EDITION)
 
-AI-KU adalah platform AI otonom yang dirancang khusus untuk infrastruktur berat (RAM 100GB+). Platform ini tidak disarankan untuk penggunaan manusia biasa karena tuntutan resource yang ekstrem.
+AI-KU adalah platform AI otonom yang dirancang khusus untuk infrastruktur berat (RAM 100GB+). Edisi ini menyertakan kemampuan keamanan defensif tingkat lanjut.
+
+## 🛡️ Cyber Defense & Hardening (Shield Series)
+- **ai-ku-shield-guard**: Fokus pada pengamanan sistem, konfigurasi server yang aman, dan strategi pertahanan proaktif.
+- **ai-ku-shield-audit**: Melakukan audit keamanan pada kode sumber untuk menemukan dan memperbaiki kerentanan (remediasi).
+- **Secure Coding**: Panduan penulisan kode yang tahan terhadap serangan siber (XSS, SQLi, CSRF, dll).
 
 ## 🧠 Core Intelligence (Chat Models)
 - **ai-ku-core-mini**: Chat ringan & cepat (128K Token).
@@ -9,7 +14,7 @@ AI-KU adalah platform AI otonom yang dirancang khusus untuk infrastruktur berat 
 
 ## 🎨 Creative Matrix (Image Models)
 - **ai-ku-pixel-fast**: Generasi instan untuk draft ide.
-- **ai-ku-pixel-studio**: Kualitas studio profesional (1024x1024).
+- **ai-ku-pixel-studio**: Kualitas studio profesional.
 - **ai-ku-pixel-ultra**: Rendering hyper-realistic tingkat 4K.
 
 ## 🛠️ Software Forge (Coding Agents)
@@ -22,10 +27,8 @@ AI-KU adalah platform AI otonom yang dirancang khusus untuk infrastruktur berat 
 - **ai-ku-scout-oracle**: Mining data lintas dimensi & validasi kebenaran absolut.
 
 ## 🔱 Omni Godmode (Hybrid Models)
-- **ai-ku-omni-basic**: Gabungan search, image, & code (5M Token).
-- **ai-ku-omni-advanced**: Multi-tasking tingkat tinggi (25M Token).
-- **ai-ku-omni-prime**: Dirigen otomatis untuk sistem bot (50M Token).
-- **ai-ku-omni-godmode**: Kapasitas 100M+ Token. Memori tanpa batas & kemampuan zero-shot otonom.
+- **ai-ku-omni-basic**: Gabungan search, image, & code.
+- **ai-ku-omni-godmode**: Kapasitas 100M+ Token. Memori tanpa batas & kemampuan otonom.
 
 ---
-**Peringatan**: AI-KU mengonsumsi RAM dalam jumlah besar (Target 100GB+) untuk mempertahankan Neural Matrix yang aktif. Disarankan hanya untuk integrasi Bot / System level.
+**Peringatan**: AI-KU mengonsumsi RAM besar (Target 100GB+). Gunakan fitur keamanan hanya untuk tujuan pertahanan dan pembelajaran etis.

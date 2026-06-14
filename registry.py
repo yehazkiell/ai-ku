@@ -18,6 +18,10 @@ MODEL_MATRIX = {
         "ai-ku-scout-deep": {"depth": "Medium", "desc": "In-depth technical research."},
         "ai-ku-scout-oracle": {"depth": "Infinity", "desc": "Cross-dimensional data mining."}
     },
+    "SECURITY": {
+        "ai-ku-shield-guard": {"focus": "Defense", "desc": "Hardening systems and secure coding."},
+        "ai-ku-shield-audit": {"focus": "Compliance", "desc": "Identifying and fixing vulnerabilities."}
+    },
     "HYBRID (OMNI)": {
         "ai-ku-omni-basic": {"tokens": "5M", "desc": "All-in-one entry level."},
         "ai-ku-omni-advanced": {"tokens": "25M", "desc": "Pro-grade multi-tasking."},
@@ -30,5 +34,6 @@ AGENT_REGISTRY = {
     "lead": {"prompt": "AI-KU Godmode Lead. Orchestrate the matrix."},
     "coder": {"prompt": "AI-KU Forge Master. Architecture and implementation."},
     "researcher": {"prompt": "AI-KU Scout Oracle. Information retrieval."},
+    "guardian": {"prompt": "AI-KU Security Guardian. Fokus pada pertahanan siber, pengerasan sistem, dan penulisan kode aman. Membantu mengamankan infrastruktur dari serangan."},
     "analyst": {"prompt": "AI-KU Logic Core. Verification and reflection."}
 }
