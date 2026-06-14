@@ -100,6 +100,9 @@ cp .env.example .env
 | `AIKU_REQUEST_TIMEOUT` | `60` | Tidak | Timeout (detik) panggilan LLM. |
 | `AIKU_MAX_ITERATIONS` | `6` | Tidak | Maksimum iterasi loop agen otonom. |
 | `AIKU_ENABLE_REFLECTION` | `true` | Tidak | Aktifkan langkah self-critique. |
+| `AIKU_WORKSPACE_DIR` | _(cwd)_ | Tidak | Folder kerja; tool file dibatasi di sini (anti path-traversal). |
+| `AIKU_MAX_FILE_READ_BYTES` | `100000` | Tidak | Batas byte hasil `read_file` (sisanya dipangkas). |
+| `AIKU_ALLOW_SHELL` | `true` | Tidak | Saklar tool shell agen. Set `false` untuk melarang shell. |
 | `AIKU_MEMORY_PATH` | `./chroma_db` | Tidak | Lokasi penyimpanan memori vektor. |
 | `AIKU_MEMORY_TOP_K` | `4` | Tidak | Jumlah memori relevan yang ditarik. |
 | `AIKU_HOST` | `0.0.0.0` | Tidak | Host server API. |
