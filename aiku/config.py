@@ -72,6 +72,16 @@ class Settings:
     max_iterations: int = field(default_factory=lambda: _get_int("AIKU_MAX_ITERATIONS", 6))
     enable_reflection: bool = field(default_factory=lambda: _get_bool("AIKU_ENABLE_REFLECTION", True))
 
+    # Tool safety / sandboxing
+    # Root that file tools (read/write/list) are confined to. Empty = current
+    # working directory, resolved per call so the agent can never escape it.
+    workspace_dir: str = field(default_factory=lambda: os.getenv("AIKU_WORKSPACE_DIR", ""))
+    max_file_read_bytes: int = field(default_factory=lambda: _get_int("AIKU_MAX_FILE_READ_BYTES", 100_000))
+    # Master switch for the agent's shell tool. Turn off to forbid shell entirely.
+    allow_shell: bool = field(default_factory=lambda: _get_bool("AIKU_ALLOW_SHELL", True))
+    # Dedicated timeout (seconds) for the shell tool, decoupled from LLM timeout.
+    shell_timeout: int = field(default_factory=lambda: _get_int("AIKU_SHELL_TIMEOUT", 30))
+
     # Memory / RAG
     memory_path: str = field(default_factory=lambda: os.getenv("AIKU_MEMORY_PATH", "./chroma_db"))
     memory_top_k: int = field(default_factory=lambda: _get_int("AIKU_MEMORY_TOP_K", 4))
@@ -141,6 +151,8 @@ class Settings:
             f"llm_model          = {self.llm_model or '(provider default)'}",
             f"max_iterations     = {self.max_iterations}",
             f"reflection         = {self.enable_reflection}",
+            f"workspace_dir      = {self.workspace_dir or '(cwd)'}",
+            f"allow_shell        = {self.allow_shell}",
             f"memory_path        = {self.memory_path}",
             f"memory_top_k       = {self.memory_top_k}",
             f"remote_providers   = {', '.join(self.configured_providers()) or 'none (g4f fallback)'}",
