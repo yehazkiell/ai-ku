@@ -42,7 +42,7 @@ def run_command(command):
     try:
         result = subprocess.run(
             command, shell=True, capture_output=True, text=True,
-            timeout=settings.request_timeout,
+            timeout=settings.shell_timeout,
         )
         output = (result.stdout or "") + (result.stderr or "")
         if not output:

@@ -79,6 +79,8 @@ class Settings:
     max_file_read_bytes: int = field(default_factory=lambda: _get_int("AIKU_MAX_FILE_READ_BYTES", 100_000))
     # Master switch for the agent's shell tool. Turn off to forbid shell entirely.
     allow_shell: bool = field(default_factory=lambda: _get_bool("AIKU_ALLOW_SHELL", True))
+    # Dedicated timeout (seconds) for the shell tool, decoupled from LLM timeout.
+    shell_timeout: int = field(default_factory=lambda: _get_int("AIKU_SHELL_TIMEOUT", 30))
 
     # Memory / RAG
     memory_path: str = field(default_factory=lambda: os.getenv("AIKU_MEMORY_PATH", "./chroma_db"))

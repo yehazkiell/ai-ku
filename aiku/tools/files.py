@@ -54,11 +54,11 @@ def read_file(filepath):
         return f"Error: {e}"
     try:
         limit = settings.max_file_read_bytes
-        with open(target, "r", encoding="utf-8") as f:
-            data = f.read(limit + 1)
-        if len(data) > limit:
-            return data[:limit] + f"\n\n[...truncated at {limit} bytes...]"
-        return data
+        with open(target, "rb") as f:
+            raw = f.read(limit + 1)
+        if len(raw) > limit:
+            return raw[:limit].decode("utf-8", errors="replace") + f"\n\n[...truncated at {limit} bytes...]"
+        return raw.decode("utf-8", errors="replace")
     except Exception as e:
         logger.error(f"read_file error for {filepath}: {e}")
         return f"Error reading file: {e}"
